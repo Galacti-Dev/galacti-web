@@ -22,7 +22,7 @@ export function StarInfoCard({ selectedObject, onClose }: SelectedObjectInfoProp
     const conPl = CONSTELLATION_NAMES_PL[star.con] || star.con;
 
     return (
-      <div className="absolute right-4 bottom-4 sm:top-20 sm:bottom-auto w-80 sm:w-88 rounded-2xl border border-white/15 bg-zinc-950/90 p-4 sm:p-5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-4">
+      <div className="absolute inset-x-3 bottom-3 sm:inset-x-auto sm:right-4 sm:top-20 sm:bottom-auto sm:w-88 max-w-[calc(100vw-1.5rem)] rounded-2xl border border-white/15 bg-zinc-950/90 p-4 sm:p-5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-4">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-white/10 pb-3">
           <div>
@@ -100,7 +100,7 @@ export function StarInfoCard({ selectedObject, onClose }: SelectedObjectInfoProp
     const conPl = CONSTELLATION_NAMES_PL[dso.con] || dso.con;
 
     return (
-      <div className="absolute right-4 bottom-4 sm:top-20 sm:bottom-auto w-80 sm:w-88 rounded-2xl border border-white/15 bg-zinc-950/90 p-4 sm:p-5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-4">
+      <div className="absolute inset-x-3 bottom-3 sm:inset-x-auto sm:right-4 sm:top-20 sm:bottom-auto sm:w-88 max-w-[calc(100vw-1.5rem)] rounded-2xl border border-white/15 bg-zinc-950/90 p-4 sm:p-5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-4">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-white/10 pb-3">
           <div>

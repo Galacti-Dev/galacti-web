@@ -9,7 +9,7 @@ import { CurrentSkyCard } from "@/components/dashboard/CurrentSkyCard";
 
 export default function DashboardPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8 w-full max-w-full overflow-x-hidden">
       {/* Welcome & Quick Launch CTA */}
       <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-zinc-900/90 via-zinc-950/80 to-black/95 p-6 sm:p-8 backdrop-blur-xl">
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">

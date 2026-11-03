@@ -1,0 +1,189 @@
+[
+  {
+    "id": "sun",
+    "name": {
+      "pl": "Słońce",
+      "en": "Sun"
+    },
+    "type": "star",
+    "realRadiusKm": 696340,
+    "scaledRadius": 5.5,
+    "realDistanceFromSunKm": 0,
+    "realDistanceFromSunAU": 0.0,
+    "scaledDistance": 0.0,
+    "orbitalPeriodDays": 0.0,
+    "rotationPeriodHours": 609.12,
+    "colorHex": "#FDB813",
+    "textureRecommendation": "https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/ (NASA SDO 4K Solar Surface Map)",
+    "shortDescriptionPl": "Słońce to gwiazda centralna Układu Słonecznego, żółty karzeł typu widmowego G2V, skupiający ponad 99,86% masy całego układu. Wytwarza energię w procesie fuzji termojądrowej wodoru w hel zachodzącej pod gigantycznym ciśnieniem w jego jądrze. Jego pole grawitacyjne utrzymuje wszystkie planety, planetoidy i komety na stabilnych orbitach.",
+    "funFactPl": "W każdej sekundzie Słońce przekształca w swoim jądrze około 600 milionów ton wodoru w hel, tracąc przy tym ponad 4 miliony ton masy zamienianej bezpośrednio w czystą energię promieniowania.",
+    "sourceUrl": "https://science.nasa.gov/sun/facts/"
+  },
+  {
+    "id": "mercury",
+    "name": {
+      "pl": "Merkury",
+      "en": "Mercury"
+    },
+    "type": "terrestrial planet",
+    "realRadiusKm": 2439.7,
+    "scaledRadius": 0.38,
+    "realDistanceFromSunKm": 57909050,
+    "realDistanceFromSunAU": 0.3871,
+    "scaledDistance": 9.0,
+    "orbitalPeriodDays": 87.97,
+    "rotationPeriodHours": 1407.6,
+    "colorHex": "#A5A5A5",
+    "textureRecommendation": "https://astrogeology.usgs.gov/search/map/Mercury/MESSENGER/Global/Mercury_MESSENGER_MDIS_Basemap_BDR_Mosaic_Global_166ppd (NASA MESSENGER Global Mosaic)",
+    "shortDescriptionPl": "Merkury to najmniejsza i położona najbliżej Słońca planeta Układu Słonecznego. Brak gęstej atmosfery powoduje ekstremalne wahania temperatur od 430°C w dzień do -180°C w nocy. Jego pokryta licznymi kraterami uderzeniowymi powierzchnia bardzo przypomina ziemski Księżyc.",
+    "funFactPl": "Doba słoneczna na Merkurym trwa aż 176 ziemskich dni – jest więc dwukrotnie dłuższa niż jego własny rok orbitalny (88 dni).",
+    "sourceUrl": "https://science.nasa.gov/mercury/facts/"
+  },
+  {
+    "id": "venus",
+    "name": {
+      "pl": "Wenus",
+      "en": "Venus"
+    },
+    "type": "terrestrial planet",
+    "realRadiusKm": 6051.8,
+    "scaledRadius": 0.95,
+    "realDistanceFromSunKm": 108208000,
+    "realDistanceFromSunAU": 0.7233,
+    "scaledDistance": 14.0,
+    "orbitalPeriodDays": 224.7,
+    "rotationPeriodHours": -5832.5,
+    "colorHex": "#E3BB7B",
+    "textureRecommendation": "https://astrogeology.usgs.gov/search/map/Venus/Magellan/ (NASA Magellan Radar Global Topography Mosaic)",
+    "shortDescriptionPl": "Wenus jest drugą planetą od Słońca i najgorętszym globem w układzie z powodu niekontrolowanego efektu cieplarnianego. Jej gęsta atmosfera, złożona w 96% z dwutlenku węgla z chmurami kwasu siarkowego, utrzymuje stałą temperaturę powierzchni na poziomie około 465°C. Ciśnienie przy powierzchni jest ponad 90-krotnie wyższe niż na Ziemi.",
+    "funFactPl": "Wenus obraca się w kierunku wstecznym (ze wschodu na zachód), a jeden pełny obrót wokół własnej osi trwa dłużej (243 dni ziemskie) niż jej obieg wokół Słońca (225 dni).",
+    "sourceUrl": "https://science.nasa.gov/venus/facts/"
+  },
+  {
+    "id": "earth",
+    "name": {
+      "pl": "Ziemia",
+      "en": "Earth"
+    },
+    "type": "terrestrial planet",
+    "realRadiusKm": 6371.0,
+    "scaledRadius": 1.0,
+    "realDistanceFromSunKm": 149598023,
+    "realDistanceFromSunAU": 1.0,
+    "scaledDistance": 20.0,
+    "orbitalPeriodDays": 365.256,
+    "rotationPeriodHours": 23.934,
+    "colorHex": "#2277FF",
+    "textureRecommendation": "https://visibleearth.nasa.gov/collection/1484/blue-marble (NASA Visible Earth Blue Marble: Next Generation)",
+    "shortDescriptionPl": "Ziemia to trzecia planeta od Słońca i jedyny znany nam obiekt we Wszechświecie goszczący życie. Około 71% jej powierzchni zajmuje woda w stanie ciekłym, a atmosfera bogata w azot i tlen stwarza warunki do rozwoju biosfery. Płynne żelazne jądro zewnętrzne generuje silne pole magnetyczne chroniące planetę przed wiatrem słonecznym.",
+    "funFactPl": "Ziemia nie jest idealną kulą, lecz elipsoidą obrotową (geoidą) – ze względu na siłę odśrodkową jej promień na równiku jest o około 21 km większy niż na biegunach.",
+    "sourceUrl": "https://science.nasa.gov/earth/facts/"
+  },
+  {
+    "id": "mars",
+    "name": {
+      "pl": "Mars",
+      "en": "Mars"
+    },
+    "type": "terrestrial planet",
+    "realRadiusKm": 3389.5,
+    "scaledRadius": 0.53,
+    "realDistanceFromSunKm": 227939366,
+    "realDistanceFromSunAU": 1.5237,
+    "scaledDistance": 27.0,
+    "orbitalPeriodDays": 686.98,
+    "rotationPeriodHours": 24.623,
+    "colorHex": "#C1440E",
+    "textureRecommendation": "https://astrogeology.usgs.gov/search/map/Mars/Viking/MDIM21 (NASA Viking MDIM 2.1 Color Mosaic)",
+    "shortDescriptionPl": "Mars, znany jako Czerwona Planeta, zawdzięcza swoją barwę tlenkom żelaza pokrywającym jego pustynną powierzchnię. Posiada cienką atmosferę z dwutlenku węgla oraz polarne czapy lodowe złożone z lodu wodnego i suchego lodu. Na jego powierzchni znajduje się Olympus Mons – najwyższy wulkan w całym Układzie Słonecznym.",
+    "funFactPl": "Wulkan Olympus Mons wznosi się na wysokość około 22 kilometrów nad marsjańskie równiny, co czyni go niemal trzykrotnie wyższym od Mount Everestu.",
+    "sourceUrl": "https://science.nasa.gov/mars/facts/"
+  },
+  {
+    "id": "jupiter",
+    "name": {
+      "pl": "Jowisz",
+      "en": "Jupiter"
+    },
+    "type": "gas giant",
+    "realRadiusKm": 69911.0,
+    "scaledRadius": 2.6,
+    "realDistanceFromSunKm": 778412020,
+    "realDistanceFromSunAU": 5.2044,
+    "scaledDistance": 38.0,
+    "orbitalPeriodDays": 4332.59,
+    "rotationPeriodHours": 9.925,
+    "colorHex": "#D8CA9D",
+    "textureRecommendation": "https://photojournal.jpl.nasa.gov/catalog/PIA07782 (NASA Cassini/JPL Global Jupiter Map)",
+    "shortDescriptionPl": "Jowisz to największa planeta Układu Słonecznego, której masa przekracza dwukrotnie łączną masę wszystkich pozostałych planet razem wziętych. Ten gazowy olbrzym zbudowany głównie z wodoru i helu nie ma stałej powierzchni i wytwarza gigantyczne pole magnetyczne. W jego pasiastej atmosferze wiruje Wielka Czerwona Plama – antycyklon trwający od stuleci.",
+    "funFactPl": "Wielka Czerwona Plama na Jowiszu to olbrzymia burza wiejąca od setek lat, która bez problemu pomieściłaby w swoim wnętrzu całą planetę Ziemię.",
+    "sourceUrl": "https://science.nasa.gov/jupiter/facts/"
+  },
+  {
+    "id": "saturn",
+    "name": {
+      "pl": "Saturn",
+      "en": "Saturn"
+    },
+    "type": "gas giant",
+    "realRadiusKm": 58232.0,
+    "scaledRadius": 2.2,
+    "realDistanceFromSunKm": 1433530000,
+    "realDistanceFromSunAU": 9.5826,
+    "scaledDistance": 50.0,
+    "orbitalPeriodDays": 10759.22,
+    "rotationPeriodHours": 10.656,
+    "colorHex": "#EAD6B8",
+    "hasRings": true,
+    "ringInnerRadiusScaled": 2.6,
+    "ringOuterRadiusScaled": 4.5,
+    "textureRecommendation": "https://photojournal.jpl.nasa.gov/catalog/PIA01482 (NASA Cassini ISS Global Mosaic)",
+    "shortDescriptionPl": "Saturn to szósty od Słońca gazowy olbrzym, wyróżniający się najbardziej rozbudowanym i jasnym systemem pierścieni. Pierścienie te składają się z miliardów odłamków lodu wodnego i skał o rozmiarach od mikroskopijnych pyłków po kilkumetrowe bloki. Jest planetą o najniższej gęstości w całym układzie – mniejszej nawet od gęstości wody.",
+    "funFactPl": "Średnia gęstość Saturna wynosi zaledwie 0,687 g/cm³ – oznacza to, że gdyby istniał wystarczająco wielki ocean, Saturn unosiłby się na wodzie.",
+    "sourceUrl": "https://science.nasa.gov/saturn/facts/"
+  },
+  {
+    "id": "uranus",
+    "name": {
+      "pl": "Uran",
+      "en": "Uranus"
+    },
+    "type": "ice giant",
+    "realRadiusKm": 25362.0,
+    "scaledRadius": 1.5,
+    "realDistanceFromSunKm": 2872460000,
+    "realDistanceFromSunAU": 19.1913,
+    "scaledDistance": 63.0,
+    "orbitalPeriodDays": 30685.4,
+    "rotationPeriodHours": -17.24,
+    "colorHex": "#65B3C8",
+    "hasRings": true,
+    "ringInnerRadiusScaled": 1.8,
+    "ringOuterRadiusScaled": 2.2,
+    "textureRecommendation": "https://photojournal.jpl.nasa.gov/catalog/PIA18182 (NASA Voyager 2 / Hubble Uranus Map)",
+    "shortDescriptionPl": "Uran jest lodowym olbrzymem o błękitno-zielonym zabarwieniu spowodowanym absorpcją światła czerwonego przez metan w atmosferze. Charakteryzuje się unikalnym nachyleniem osi obrotu pod kątem 97,8 stopnia, co sprawia, że porusza się po orbicie niejako „tocząc się na boku”. Posiada najzimniejszą atmosferę planetarną w Układzie Słonecznym, osiągającą -224°C.",
+    "funFactPl": "Przez nietypowe nachylenie osi obrotu każdy z biegunów Urana doświadcza naprzemiennie przez 42 lata ciągłej nocy polarnej, a następnie przez 42 lata nieprzerwanego dnia.",
+    "sourceUrl": "https://science.nasa.gov/uranus/facts/"
+  },
+  {
+    "id": "neptune",
+    "name": {
+      "pl": "Neptun",
+      "en": "Neptune"
+    },
+    "type": "ice giant",
+    "realRadiusKm": 24622.0,
+    "scaledRadius": 1.45,
+    "realDistanceFromSunKm": 4495060000,
+    "realDistanceFromSunAU": 30.07,
+    "scaledDistance": 76.0,
+    "orbitalPeriodDays": 60189.0,
+    "rotationPeriodHours": 16.11,
+    "colorHex": "#274687",
+    "hasRings": true,
+    "textureRecommendation": "https://photojournal.jpl.nasa.gov/catalog/PIA01492 (NASA Voyager 2 Neptune Map)",
+    "shortDescriptionPl": "Neptun to ósma i najdalsza planeta Układu Słonecznego, ciemny lodowy olbrzym o intensywnie niebieskim odcieniu. Szaleją na nim najpotężniejsze wiatry w całym układzie, wiejące w atmosferze z ponaddźwiękową prędkością przekraczającą 2100 km/h. Jego istnienie zostało najpierw przewidziane na podstawie anomalii orbity Urana, a dopiero potem potwierdzone teleskopowo.",
+    "funFactPl": "Neptun był pierwszą planetą odkrytą nie za pomocą bezpośredniej obserwacji nieba, lecz na drodze czystych obliczeń matematycznych w 1846 roku.",
+    "sourceUrl": "https://science.nasa.gov/neptune/facts/"
+  }
+]

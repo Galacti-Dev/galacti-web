@@ -3,6 +3,7 @@ import { Orbit, Bot, ArrowRight, Sparkles } from "lucide-react";
 import { ApodHero } from "@/components/dashboard/ApodHero";
 import { IssTrackerCard } from "@/components/dashboard/IssTrackerCard";
 import { UpcomingLaunchesCard } from "@/components/dashboard/UpcomingLaunchesCard";
+import { SpaceWeatherCard } from "@/components/dashboard/SpaceWeatherCard";
 
 export default function DashboardPage() {
   return (
@@ -47,6 +48,11 @@ export default function DashboardPage() {
       {/* APOD Featured Hero */}
       <section>
         <ApodHero />
+      </section>
+
+      {/* Space Weather & Aurora Live Monitor */}
+      <section>
+        <SpaceWeatherCard />
       </section>
 
       {/* Grid: ISS Telemetry & Launches */}

@@ -1,0 +1,202 @@
+[
+  {
+    "id": "moon",
+    "name": {
+      "pl": "Księżyc",
+      "en": "Moon"
+    },
+    "type": "moon",
+    "parentBodyId": "earth",
+    "realRadiusKm": 1737.4,
+    "scaledRadius": 0.27,
+    "realDistanceKm": 384400,
+    "scaledDistance": 2.2,
+    "orbitalPeriodDays": 27.3217,
+    "rotationPeriodHours": 655.72,
+    "colorHex": "#B0B0B0",
+    "textureUrl": "https://www.solarsystemscope.com/textures/download/2k_moon.jpg",
+    "shortDescriptionPl": "Księżyc jest jedynym naturalnym satelitą Ziemi i piątym co do wielkości księżycem w Układzie Słonecznym. Znajduje się w rotacji synchronicznej z Ziemią, przez co zawsze zwraca się ku niej tą samą półkulą. Jego grawitacja wywołuje pływy morskie oraz stabilizuje nachylenie osi obrotu naszej planety, zapewniając stabilny klimat.",
+    "funFactPl": "Księżyc powoli oddala się od Ziemi w tempie około 3,8 centymetra rocznie na skutek oddziaływań pływowych przekazujących energię orbitalną z ruchu obrotowego Ziemi.",
+    "sourceUrl": "https://science.nasa.gov/moon/facts/"
+  },
+  {
+    "id": "io",
+    "name": {
+      "pl": "Io",
+      "en": "Io"
+    },
+    "type": "moon",
+    "parentBodyId": "jupiter",
+    "realRadiusKm": 1821.6,
+    "scaledRadius": 0.35,
+    "realDistanceKm": 421700,
+    "scaledDistance": 4.2,
+    "orbitalPeriodDays": 1.769,
+    "rotationPeriodHours": 42.46,
+    "colorHex": "#E4B838",
+    "textureUrl": "https://photojournal.jpl.nasa.gov/jpeg/PIA00583.jpg",
+    "shortDescriptionPl": "Io to najbardziej aktywny wulkanicznie obiekt w Układzie Słonecznym, posiadający ponad 400 czynnych wulkanów. Nieustanne erupcje siarki i dwutlenku siarki są napędzane gigantycznym ogrzewaniem pływowym wywoływanym przez Jowisza, Europę i Ganimedesa. Jego żółto-pomarańczowa powierzchnia jest stale odnawiana przez zastygającą lawę.",
+    "funFactPl": "Pióropusze wulkaniczne na Io potrafią wyrzucać rozżarzoną materię siarkową na wysokość ponad 500 kilometrów w przestrzeń kosmiczną z prędkością dochodzącą do 1 km/s.",
+    "sourceUrl": "https://science.nasa.gov/jupiter/moons/io/facts/"
+  },
+  {
+    "id": "europa",
+    "name": {
+      "pl": "Europa",
+      "en": "Europa"
+    },
+    "type": "moon",
+    "parentBodyId": "jupiter",
+    "realRadiusKm": 1560.8,
+    "scaledRadius": 0.30,
+    "realDistanceKm": 670900,
+    "scaledDistance": 5.4,
+    "orbitalPeriodDays": 3.551,
+    "rotationPeriodHours": 85.23,
+    "colorHex": "#D5CEBA",
+    "textureUrl": "https://photojournal.jpl.nasa.gov/jpeg/PIA19048.jpg",
+    "shortDescriptionPl": "Europa to pokryty lodem księżyc Jowisza, pod którego gładką, popękaną skorupą kryje się globalny ocean ciekłej słonej wody o objętości dwukrotnie większej niż wszystkie oceany na Ziemi. Ciepło wytwarzane przez siły pływowe Jowisza utrzymuje wodę w stanie ciekłym. Jest to jeden z najbardziej obiecujących celów w astrobiologicznych poszukiwaniach życia pozaziemskiego.",
+    "funFactPl": "Mimo że Europa jest mniejsza od ziemskiego Księżyca, jej podpowierzchniowy ocean zawiera szacunkowo dwa do trzech razy więcej wody niż cała biosfera planety Ziemia.",
+    "sourceUrl": "https://science.nasa.gov/jupiter/moons/europa/facts/"
+  },
+  {
+    "id": "ganymede",
+    "name": {
+      "pl": "Ganimedes",
+      "en": "Ganymede"
+    },
+    "type": "moon",
+    "parentBodyId": "jupiter",
+    "realRadiusKm": 2634.1,
+    "scaledRadius": 0.45,
+    "realDistanceKm": 1070400,
+    "scaledDistance": 6.8,
+    "orbitalPeriodDays": 7.155,
+    "rotationPeriodHours": 171.71,
+    "colorHex": "#8C837A",
+    "textureUrl": "https://photojournal.jpl.nasa.gov/jpeg/PIA01666.jpg",
+    "shortDescriptionPl": "Ganimedes jest największym księżycem w Układzie Słonecznym – swoimi rozmiarami przewyższa planetę Merkury oraz planetę karłowatą Pluton. Jako jedyny znany księżyc posiada własne wewnętrzne dipolowe pole magnetyczne generowane przez płynne żelazne jądro. Składa się głównie ze skał krzemianowych oraz lodu wodnego.",
+    "funFactPl": "Ganimedes jest jedynym księżycem w Układzie Słonecznym posiadającym własną magnetosferę, co powoduje powstawanie na jego biegunach świecących pasów zórz polarnych.",
+    "sourceUrl": "https://science.nasa.gov/jupiter/moons/ganymede/facts/"
+  },
+  {
+    "id": "callisto",
+    "name": {
+      "pl": "Kallisto",
+      "en": "Callisto"
+    },
+    "type": "moon",
+    "parentBodyId": "jupiter",
+    "realRadiusKm": 2410.3,
+    "scaledRadius": 0.42,
+    "realDistanceKm": 1882700,
+    "scaledDistance": 8.4,
+    "orbitalPeriodDays": 16.689,
+    "rotationPeriodHours": 400.54,
+    "colorHex": "#68615A",
+    "textureUrl": "https://photojournal.jpl.nasa.gov/jpeg/PIA03456.jpg",
+    "shortDescriptionPl": "Kallisto to najbardziej oddalony od planety z czterech księżyców galileuszowych Jowisza. Jego powierzchnia jest najgęściej pokryta kraterami uderzeniowymi w całym Układzie Słonecznym i uważa się ją za jedną z najstarszych i geologicznie najmniej zmienionych od 4 miliardów lat. Nie wykazuje oznak współczesnej aktywności wulkanicznej ani tektonicznej.",
+    "funFactPl": "Powierzchnia Kallisto jest tak stara i nasycona kraterami, że każdy nowy impakt meteorytu z reguły niszczy lub nakłada się na wcześniejszy krater.",
+    "sourceUrl": "https://science.nasa.gov/jupiter/moons/callisto/facts/"
+  },
+  {
+    "id": "titan",
+    "name": {
+      "pl": "Tytan",
+      "en": "Titan"
+    },
+    "type": "moon",
+    "parentBodyId": "saturn",
+    "realRadiusKm": 2574.7,
+    "scaledRadius": 0.44,
+    "realDistanceKm": 1221870,
+    "scaledDistance": 5.6,
+    "orbitalPeriodDays": 15.945,
+    "rotationPeriodHours": 382.69,
+    "colorHex": "#E09C43",
+    "textureUrl": "https://photojournal.jpl.nasa.gov/jpeg/PIA19658.jpg",
+    "shortDescriptionPl": "Tytan to drugi co do wielkości księżyc w Układzie Słonecznym i jedyny posiadający gęstą atmosferę, bogatą w azot i metan. Na jego powierzchni panuje pełny cykl hydrologiczny, w którym rolę wody pełnią ciekłe węglowodory tworzące rzeki, jeziora i morza metanowo-etanowe (np. Kraken Mare). Ciśnienie atmosferyczne przy powierzchni jest o 50% wyższe niż na Ziemi.",
+    "funFactPl": "Dzięki niskiej grawitacji (ok. 1/7 ziemskiej) i gęstej atmosferze, człowiek ze sztucznymi skrzydłami przymocowanymi do ramion mógłby na Tytanie z łatwością latać siłą własnych mięśni.",
+    "sourceUrl": "https://science.nasa.gov/saturn/moons/titan/facts/"
+  },
+  {
+    "id": "enceladus",
+    "name": {
+      "pl": "Enceladus",
+      "en": "Enceladus"
+    },
+    "type": "moon",
+    "parentBodyId": "saturn",
+    "realRadiusKm": 252.1,
+    "scaledRadius": 0.20,
+    "realDistanceKm": 238000,
+    "scaledDistance": 3.6,
+    "orbitalPeriodDays": 1.370,
+    "rotationPeriodHours": 32.89,
+    "colorHex": "#F0F4F8",
+    "textureUrl": "https://photojournal.jpl.nasa.gov/jpeg/PIA18435.jpg",
+    "shortDescriptionPl": "Enceladus to skuty lodem księżyc Saturna charakteryzujący się najwyższym albedo w Układzie Słonecznym, odbijając niemal 100% padającego światła. W rejonie bieguna południowego posiada pęknięcia zwane 'tygrysimi pasami', z których gejzery kriowulkaniczne wyrzucają w przestrzeń parę wodną i kryształki lodu z podpowierzchniowego oceanu. Materia ta bezpośrednio zasila pierścień E Saturna.",
+    "funFactPl": "Sonda Cassini przeleciała bezpośrednio przez pióropusze lodowych gejzerów Enceladusa, potwierdzając obecność wody morskiej, dwutlenku węgla, metanu oraz złożonych cząsteczek organicznych.",
+    "sourceUrl": "https://science.nasa.gov/saturn/moons/enceladus/facts/"
+  },
+  {
+    "id": "ceres",
+    "name": {
+      "pl": "Ceres",
+      "en": "Ceres"
+    },
+    "type": "dwarf_planet",
+    "parentBodyId": "sun",
+    "realRadiusKm": 469.7,
+    "scaledRadius": 0.24,
+    "realDistanceKm": 413700000,
+    "scaledDistance": 32.5,
+    "orbitalPeriodDays": 1682.0,
+    "rotationPeriodHours": 9.074,
+    "colorHex": "#9B948E",
+    "textureUrl": "https://www.solarsystemscope.com/textures/download/2k_ceres_fictional.jpg",
+    "shortDescriptionPl": "Ceres jest największym obiektem w głównym pasie planetoid między Marsem a Jowiszem i jedyną planetą karłowatą w wewnętrznym Układzie Słonecznym. Skupia około jednej trzeciej całkowitej masy całego pasa planetoid i posiada kształt zbliżony do sferoidy dzięki własnej grawitacji. Misja Dawn odkryła na jej powierzchni kriowulkan Ahuna Mons oraz jasne faculae (osady węglanów sodu) w kraterze Occator.",
+    "funFactPl": "Gdy Giuseppe Piazzi odkrył Ceres w 1801 roku, przez niemal pół wieku uznawano ją oficjalnie za ósmą pełnoprawną planetę Układu Słonecznego, nim odkryto więcej obiektów pasa planetoid.",
+    "sourceUrl": "https://science.nasa.gov/dwarf-planets/ceres/facts/"
+  },
+  {
+    "id": "pluto",
+    "name": {
+      "pl": "Pluton",
+      "en": "Pluto"
+    },
+    "type": "dwarf_planet",
+    "parentBodyId": "sun",
+    "realRadiusKm": 1188.3,
+    "scaledRadius": 0.35,
+    "realDistanceKm": 5906380000,
+    "scaledDistance": 88.0,
+    "orbitalPeriodDays": 90560.0,
+    "rotationPeriodHours": -153.28,
+    "colorHex": "#C4A482",
+    "textureUrl": "https://photojournal.jpl.nasa.gov/jpeg/PIA20291.jpg",
+    "shortDescriptionPl": "Pluton to najsłynniejsza planeta karłowata w Pasie Kuipera, która do 2006 roku była uznawana za dziewiątą planetę Układu Słonecznego. Badania sondy New Horizons z 2015 roku ujawniły zaskakująco aktywny geologicznie glob z górami lodu wodnego sięgającymi 3500 m oraz lodowcem z zamarzniętego azotu w kształcie serca (Tombaugh Regio). Wraz ze swoim największym księżycem Charonem tworzy zsynchronizowany układ podwójny.",
+    "funFactPl": "Środek ciężkości (barycentrum) układu Pluton-Charon znajduje się w otwartej przestrzeni kosmicznej nad powierzchnią Plutona, przez co oba ciała krążą wokół punktu leżącego pomiędzy nimi.",
+    "sourceUrl": "https://science.nasa.gov/dwarf-planets/pluto/facts/"
+  },
+  {
+    "id": "charon",
+    "name": {
+      "pl": "Charon",
+      "en": "Charon"
+    },
+    "type": "moon",
+    "parentBodyId": "pluto",
+    "realRadiusKm": 606.0,
+    "scaledRadius": 0.22,
+    "realDistanceKm": 19596,
+    "scaledDistance": 1.8,
+    "orbitalPeriodDays": 6.387,
+    "rotationPeriodHours": 153.29,
+    "colorHex": "#A09A92",
+    "textureUrl": "https://photojournal.jpl.nasa.gov/jpeg/PIA19968.jpg",
+    "shortDescriptionPl": "Charon to największy z pięciu znanych księżyców Plutona, o średnicy równej ponad połowie średnicy samego Plutona. Jest w obustronnej blokadzie pływowej z Plutonem – oba ciała są stale zwrócone ku sobie tą samą stroną i wykonują obrót w dokładnie takim samym czasie. Wyróżnia się ciemnym, czerwonawym obszarem polarnym zwanym Mordor Macula, pokrytym złożonymi cząsteczkami organicznymi (tolinami).",
+    "funFactPl": "Ze względu na obustronną synchronizację pływową, obserwator stojący na określonej półkuli Plutona widziałby Charona zawieszonego nieruchomo w tym samym punkcie nieba, podczas gdy z przeciwnej półkuli nie zobaczyłby go nigdy.",
+    "sourceUrl": "https://science.nasa.gov/dwarf-planets/pluto/moons/charon/"
+  }
+]

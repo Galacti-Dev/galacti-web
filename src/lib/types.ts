@@ -164,3 +164,34 @@ export interface ApiResponse<T> {
   error?: string;
   isFallback?: boolean;
 }
+
+export type AstronomicalEventType =
+  | 'meteor_shower'
+  | 'eclipse'
+  | 'conjunction'
+  | 'moon_phase'
+  | 'planetary_event';
+
+export type VisibilityPoland = 'excellent' | 'good' | 'partial' | 'none';
+
+export type EquipmentRequired = 'naked_eye' | 'binoculars' | 'telescope';
+
+export interface AstronomicalEvent {
+  id: string;
+  title: string;
+  type: AstronomicalEventType;
+  startDate: string;
+  peakDate: string;
+  endDate: string;
+  visibilityPoland: VisibilityPoland;
+  equipmentRequired: EquipmentRequired;
+  radiant?: string;
+  zhr?: number;
+  parentBody?: string;
+  eclipseType?: string;
+  magnitudeInPoland?: string;
+  separation?: string;
+  description: string;
+  observationTips: string;
+}
+

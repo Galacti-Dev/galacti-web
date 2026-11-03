@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Orbit, Compass, Bot } from "lucide-react";
+import { Orbit, Compass, Bot, Calendar } from "lucide-react";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -20,6 +20,12 @@ export function Navbar() {
       label: "Układ Słoneczny 3D",
       icon: Orbit,
       description: "Eksploracja planet",
+    },
+    {
+      href: "/calendar",
+      label: "Kalendarz Zjawisk",
+      icon: Calendar,
+      description: "Zjawiska 2026–2027",
     },
     {
       href: "/chat",
@@ -49,7 +55,7 @@ export function Navbar() {
             <div className="flex items-center gap-2">
               <span className="text-xl font-black tracking-widest text-white">GALACTI</span>
               <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-zinc-300 border border-white/10">
-                v0.3.0
+                v0.4.0
               </span>
             </div>
             <span className="text-[11px] text-zinc-400">Space Telemetry & 3D Explorer</span>

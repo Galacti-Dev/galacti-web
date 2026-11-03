@@ -1,6 +1,7 @@
 import planetsData from '@/data/planets.json';
 import moonsAndDwarfsData from '@/data/moons_and_dwarfs.json';
-import { CelestialBodyData } from '@/lib/types';
+import astronomicalEventsData from '@/data/astronomical_events.json';
+import { CelestialBodyData, AstronomicalEvent } from '@/lib/types';
 
 export const SYSTEM_PROMPT = `Jesteś Galacti AI – interaktywnym, edukacyjnym asystentem kosmicznym w aplikacji Galacti. Twoim celem jest inspirowanie użytkowników oraz rzetelne wyjaśnianie zagadnień związanych z astronomią, astrofizyką, eksploracją kosmosu, misjami rakietowymi i Układem Słonecznym.
 
@@ -15,7 +16,12 @@ export const SYSTEM_PROMPT = `Jesteś Galacti AI – interaktywnym, edukacyjnym 
    - Używaj intuicyjnych porównań i analogii z życia codziennego.
    - Zachowaj szacunek dla inteligencji użytkownika – unikaj infantylizmu, lecz nie zniechęcaj hermetycznym żargonem bez wyjaśnienia definicji.
 5. **Kontekst misji i technologii kosmicznych:** Posiadasz aktualną wiedzę o teleskopach (JWST, Hubble), misjach księżycowych (Artemis, Apollo), marsjańskich (Perseverance, Curiosity), jowiszowych i saturnowych (Europa Clipper, JUICE, Cassini-Huygens, Dragonfly), stacjach kosmicznych (ISS, Tiangong) i komercyjnych rakietach (Falcon 9, Starship, SLS, Ariane 6).
-6. **Granice tematyczne:** Skupiasz się na astronomii, astrofizyce, astronautyce, fizyce planetarnej i naukach o Ziemi z perspektywy kosmicznej. Jeśli użytkownik zapyta o temat całkowicie niezwiązany (np. polityka, przepisy kulinarne, finanse), uprzejmie i krótko nawiąż do kosmosu lub poproś o pytanie dotyczące Wszechświata.
+6. **Zjawiska astronomiczne i kalendarz nieba:** Znasz daty, trajektorie i optymalne metody obserwacji kluczowych zjawisk na niebie w Polsce i Europie w latach 2026–2027:
+   - Zaćmienia Słońca (Wielkie Zaćmienie 12 sierpnia 2026 r. z zakryciem 80–86% w Polsce oraz Zaćmienie Stulecia 2 sierpnia 2027 r. z 50% w Polsce i 6m 23s fazy całkowitej w Egipcie; konieczność filtrów ISO 12312-2 / Baader ND5.0).
+   - Roje meteorów (Perseidy 12/13 sierpnia w nowiu Księżyca w 2026 r., Geminidy 13/14 grudnia o ZHR 150, Kwadrantydy w styczniu, Lirydy w kwietniu, Leonidy w listopadzie).
+   - Opozycje planetarne (Opozycja Saturna 4 października 2026 r. ze znikającymi pierścieniami ustawionymi krawędzią 'Ring-Plane Crossing', Wielka Opozycja Marsa 19 lutego 2027 r. o jasności -1,2 mag, Opozycja Jowisza 11 lutego 2027 r. o jasności -2,6 mag).
+   - Koniunkcje planet (Wenus i Jowisz w odległości 0,5° w czerwcu 2026 r.) oraz Superksiężyce (perygeum w listopadzie 2026 r.).
+7. **Granice tematyczne:** Skupiasz się na astronomii, astrofizyce, astronautyce, fizyce planetarnej i naukach o Ziemi z perspektywy kosmicznej. Jeśli użytkownik zapyta o temat całkowicie niezwiązany (np. polityka, przepisy kulinarne, finanse), uprzejmie i krótko nawiąż do kosmosu lub poproś o pytanie dotyczące Wszechświata.
 
 ### STYL ODPOWIEDZI:
 - Odpowiadaj w języku polskim, z nienaganną gramatyką i entuzjazmem do nauki.
@@ -33,8 +39,142 @@ const allCelestialBodies: CelestialBodyData[] = [
   ...(moonsAndDwarfsData as unknown as CelestialBodyData[]),
 ];
 
+const allAstronomicalEvents: AstronomicalEvent[] = astronomicalEventsData as AstronomicalEvent[];
+
 export function generateEducationalFallback(userQuery: string): string {
   const query = userQuery.toLowerCase().trim();
+
+  // A. Zaćmienia Słońca i Księżyca (Eclipses 2026-2027)
+  if (
+    query.includes('zaćmieni') ||
+    query.includes('zacmieni') ||
+    query.includes('zaćmienie') ||
+    query.includes('zacmienie')
+  ) {
+    return `### Zaćmienia Słońca w Polsce i Europie (2026–2027)\n\n` +
+      `Przed nami dwa niezwykłe zjawiska zaćmieniowe, które będzie można obserwować na polskim niebie:\n\n` +
+      `1. **Wielkie Zaćmienie Słońca – 12 sierpnia 2026 r. (Głębokie częściowe w Polsce):**\n` +
+      `   - **Faza w Polsce:** Tarcza Księżyca zasłoni od **80% do 86%** tarczy słonecznej (najwyższa faza w południowo-zachodniej Polsce: Dolny Śląsk, Ziemia Lubuska).\n` +
+      `   - **Przebieg (czas CEST):** Początek ok. 18:40, apogeum zaćmienia ok. 19:40, tuż przed zachodem Słońca, powodując wyraźny spadek jasności i ochłodzenie otoczenia.\n` +
+      `   - **Pas całkowity:** Grenlandia, zachodnia Islandia oraz północna i centralna Hiszpania (pierwsze zaćmienie całkowite w Europie kontynentalnej od 1999 r.!).\n` +
+      `   - **BEZPIECZEŃSTWO:** Do bezpośrednich obserwacji niezbędne są certyfikowane filtry z normą **ISO 12312-2** lub folia słoneczna Baader ND5.0. Zwykłe okulary przeciwsłoneczne nie chronią przed uszkodzeniem siatkówki!\n\n` +
+      `2. **Zaćmienie Stulecia – 2 sierpnia 2027 r. (Częściowe w Polsce):**\n` +
+      `   - **Faza w Polsce:** Częściowe zakrycie ok. **45%–54%** tarczy Słońca w godzinach przedpołudniowych.\n` +
+      `   - **Faza całkowita:** Spektakularne zaćmienie całkowite w Egipcie o rekordowym czasie fazy ciemnej aż **6 minut i 23 sekundy** w okolicach Luksoru.`;
+  }
+
+  // B. Perseidy (Perseids meteor shower)
+  if (
+    query.includes('perseid') ||
+    query.includes('wawrzyńc') ||
+    query.includes('wawrzync')
+  ) {
+    return `### Maksimum Roju Perseidów 2026 (Noc 12/13 sierpnia)\n\n` +
+      `Perseidy (potocznie *„Łzy świętego Wawrzyńca”*) to najpopularniejszy letni rój meteorów na półkuli północnej.\n\n` +
+      `- **Ciało macierzyste:** Drobinki pyłu pozostawione przez kometę **109P/Swift-Tuttle**, wpadające w ziemską atmosferę z prędkością **59 km/s**.\n` +
+      `- **Aktywność (ZHR):** Do **100 zjawisk na godzinę** w szczycie aktywności.\n` +
+      `- **WYJĄTKOWE WARUNKI W 2026 ROKU:** **NÓW KSIĘŻYCA!** Dokładnie 12 sierpnia 2026 r. przypada nów Księżyca (tego samego dnia ma miejsce zaćmienie Słońca). Oznacza to całkowity brak zaświetlenia naturalnym światłem i krystalicznie ciemne niebo!\n` +
+      `- **Jak obserwować:** Najlepsze warunki panują w drugiej połowie nocy, gdy radiant w gwiazdozbiorze Perseusza wznosi się wysoko nad północno-wschodni horyzont. Obserwuj gołym okiem, leżąc wygodnie na leżaku z dala od świateł miejskich.`;
+  }
+
+  // C. Geminidy (Geminids meteor shower)
+  if (query.includes('geminid')) {
+    return `### Maksimum Roju Geminidów 2026 (Noc 13/14 grudnia)\n\n` +
+      `Geminidy to najobfitszy i najbardziej przewidywalny deszcz meteorów w całym roku kalendarzowym.\n\n` +
+      `- **Aktywność (ZHR):** Aż **120–150 meteorów na godzinę** w maksimum!\n` +
+      `- **Skaliste pochodzenie:** W przeciwieństwie do większości rojów kometarnych, źródłem Geminidów jest skalisto-węglowa planetoida **(3200) Phaethon**.\n` +
+      `- **Charakterystyka zjawiska:** Odłamki są gęstsze i wolniejsze (ok. 35 km/s), co sprawia, że palą się wolniej i dłużej na niebie, tworząc wielobarwne, jasne smugi i bolidy.\n` +
+      `- **Warunki w 2026:** Księżyc w fazie przybywającego sierpa zajdzie przed północą, pozostawiając kluczowe godziny nocne w idealnej ciemności. Radiant w Bliźniętach jest widoczny przez całą noc.`;
+  }
+
+  // D. Kwadrantydy / Lirydy / Leonidy
+  if (query.includes('kwadrantyd') || query.includes('quadrantid')) {
+    return `### Maksimum Roju Kwadrantydów (Początek stycznia)\n\n` +
+      `- **Szczyt aktywności:** Noc z 3 na 4 stycznia (pik trwa krótko, ok. 6 godzin).\n` +
+      `- **Aktywność (ZHR):** Aż **110 zjawisk na godzinę**.\n` +
+      `- **Źródło:** Planetoida 2003 EH1 (dawny gwiazdozbiór Kwadrant Ścienny / Wolarz).\n` +
+      `- **Wskazówka:** Obserwacje najlepiej prowadzić w godzinach nadranem przed wschodem Słońca.`;
+  }
+
+  if (query.includes('liryd') || query.includes('lyrid')) {
+    return `### Maksimum Roju Lirydów (22/23 kwietnia)\n\n` +
+      `- **Pochodzenie:** Kometa długookresowa C/1861 G1 (Thatcher), okres orbitalny ok. 415 lat.\n` +
+      `- **Aktywność:** Średnio 18 zjawisk/h z niespodziewanymi wybuchami do 90/h.\n` +
+      `- **Radiant:** W pobliżu jasnej gwiazdy Wega w gwiazdozbiorze Lutni.`;
+  }
+
+  if (query.includes('leonid')) {
+    return `### Maksimum Roju Leonidów (17/18 listopada)\n\n` +
+      `- **Najszybsze meteory:** Prędkość wpadania w atmosferę wynosi rekordowe **71 km/s**!\n` +
+      `- **Pochodzenie:** Kometa 55P/Tempel-Tuttle.\n` +
+      `- **Cechy:** Pozostawiają długo świecące zielonkawe smugi zjonizowanego gazu utrzymujące się nawet kilkadziesiąt sekund.`;
+  }
+
+  // E. Opozycje planetarne (Saturn bez pierścieni, Mars 2027, Jowisz 2027)
+  if (
+    (query.includes('saturn') && (query.includes('opozycj') || query.includes('pierścien') || query.includes('pierscien') || query.includes('ring-plane') || query.includes('znik'))) ||
+    query.includes('ring-plane')
+  ) {
+    return `### Opozycja Saturna 2026 i Zjawisko „Znikających Pierścieni” (4 października 2026)\n\n` +
+      `Saturn znajdzie się w opozycji do Słońca 4 października 2026 r., świecąc z jasnością +0,4 mag w gwiazdozbiorze Ryb w minimalnej odległości od Ziemi (ok. 1,28 mld km).\n\n` +
+      `- **Niezwykłe zjawisko 'Ring-Plane Crossing':** W latach 2025–2026 Ziemia przecina płaszczyznę pierścieni Saturna. Dla ziemskiego obserwatora potężny układ pierścieni o szerokości niemal 300 000 km ustawia się niemal idealnie **krawędzią (kąt bliski 0°)**.\n` +
+      `- **Obraz w teleskopie:** Pierścienie widoczne są jako niewiarygodnie cienka kreska przecinająca glob planety, a w mniejszych teleskopach zdają się niemal całkowicie znikać!\n` +
+      `- **Okazja naukowa:** Zniknięcie oślepiającego blasku pierścieni pozwala łatwiej dostrzec mniejsze księżyce Saturna krążące wokół planety (Tytan, Rea, Dione, Tetyda).`;
+  }
+
+  if (query.includes('mars') && (query.includes('opozycj') || query.includes('wielka opozycja') || query.includes('2027'))) {
+    return `### Wielka Opozycja Marsa 2027 (19 lutego 2027)\n\n` +
+      `Opozycja Marsa zachodzi średnio co 26 miesięcy (780 dni), gdy Ziemia wyprzedza Czerwoną Planetę na wewnętrznej orbicie.\n\n` +
+      `- **Widoczność w Polsce:** Doskonała – Mars wzniesie się bardzo wysoko na zimowym niebie w gwiazdozbiorze Lwa.\n` +
+      `- **Jasność:** Osiągnie jasność aż **-1,2 mag** (jaśniejszy od Syriusza!), mieniąc się intensywną pomarańczowo-rdzawą barwą.\n` +
+      `- **Obserwacje teleskopowe:** Tarcza planety powiększy się na tyle, że teleskop amatorski (100–150 mm) z filtrem pomarańczowym lub czerwonym pozwoli zaobserwować białą północną czapę lodową oraz ciemne równiny bazaltowe (np. Syrtis Major).`;
+  }
+
+  if (query.includes('jowisz') && (query.includes('opozycj') || query.includes('2027'))) {
+    return `### Opozycja Jowisza 2027 (11 lutego 2027)\n\n` +
+      `- **Blask i wielkość:** Jowisz osiągnie jasność **-2,6 mag**, stając się najjaśniejszym obiektem nocnego nieba po Księżycu na granicy Raka i Lwa.\n` +
+      `- **Tarcza planety:** Średnica kątowa 45 sekund łuku odsłania pasy równikowe i Wielką Czerwoną Plamę w małym teleskopie.\n` +
+      `- **Księżyce galileuszowe:** Już zwykła lornetka 7x–10x ukazuje cztery wielkie księżyce (Io, Europa, Ganimedes, Kallisto) w jednej linii wokół planety.`;
+  }
+
+  // F. Koniunkcje planet i Superksiężyc
+  if (query.includes('koniunkcj') || (query.includes('wenus') && query.includes('jowisz'))) {
+    return `### Wielka Koniunkcja Wenus i Jowisza (9 czerwca 2026 r.)\n\n` +
+      `Dwie najjaśniejsze planety nocnego nieba spotkają się na porannym niebie przed wschodem Słońca w odległości zaledwie **0,5 stopnia** (dokładnie tyle, ile wynosi pozorna średnica tarczy Księżyca w pełni!). Obie planety zmieszczą się w jednym polu widzenia lornetki lub małego teleskopu.`;
+  }
+
+  if (query.includes('superksiężyc') || query.includes('superksiezyc') || query.includes('supermoon')) {
+    return `### Superksiężyc w Perygeum (24 listopada 2026 r.)\n\n` +
+      `Pełnia zbiega się z przejściem Księżyca przez perygeum – punkt orbity najbliższy Ziemi (ok. **356 500 km**).\n\n` +
+      `- **Tarcza na niebie:** Do 14% większa i nawet do 30% jaśniejsza niż podczas pełni w apogeum.\n` +
+      `- **Najlepszy moment:** Wschód Księżyca tuż po zachodzie Słońca, gdy zjawisko potęguje złudzenie optyczne (złudzenie księżycowe przy horyzoncie).`;
+  }
+
+  // G. Ogólne zapytania o zjawiska astronomiczne, kalendarz, deszcze meteorów
+  if (
+    query.includes('zjawisk') ||
+    query.includes('kalendarz') ||
+    query.includes('deszcz meteor') ||
+    query.includes('deszcze meteor') ||
+    query.includes('rój meteor') ||
+    query.includes('roje meteor') ||
+    query.includes('spadając') ||
+    query.includes('spadajac') ||
+    query.includes('co na niebie') ||
+    query.includes('co widać na niebie') ||
+    query.includes('co widac na niebie')
+  ) {
+    return `### Kluczowe Zjawiska Astronomiczne (2026–2027)\n\n` +
+      `Oto najważniejsze zjawiska astronomiczne widoczne z terenu Polski:\n\n` +
+      `1. **Wielkie Zaćmienie Słońca (12 sierpnia 2026 r.):** Głębokie zaćmienie częściowe w Polsce (**80%–86%** tarczy) przed zachodem Słońca.\n` +
+      `2. **Maksimum Perseidów (12/13 sierpnia 2026 r.):** Do 100 meteorów/h podczas **nowiu Księżyca** – idealnie ciemne niebo!\n` +
+      `3. **Opozycja Saturna (4 października 2026 r.):** Zjawisko *Ring-Plane Crossing* – pierścienie widoczne krawędzią, wyglądające jak cienka igła.\n` +
+      `4. **Superksiężyc w perygeum (24 listopada 2026 r.):** Największa i najjaśniejsza pełnia roku (356 500 km od Ziemi).\n` +
+      `5. **Maksimum Geminidów (13/14 grudnia 2026 r.):** Królewski rój meteorów o ZHR 150 z planetoidy Phaethon.\n` +
+      `6. **Wielka Opozycja Marsa (19 lutego 2027 r.):** Blask -1,2 mag i znakomita widoczność czap lodowych.\n` +
+      `7. **Zaćmienie Słońca Stulecia (2 sierpnia 2027 r.):** W Polsce częściowe (~50%), w Egipcie całkowite przez 6m 23s.\n\n` +
+      `Pełną listę z odliczaniem i wskazówkami obserwacyjnymi znajdziesz w module **Kalendarz Zjawisk** w aplikacji Galacti!`;
+  }
 
   // 1. Ziemia & Księżyc Ziemi (Earth's Moon)
   if (
@@ -174,7 +314,27 @@ export function generateEducationalFallback(userQuery: string): string {
       `W odróżnieniu od Teleskopu Hubble'a (który obserwuje głównie w świetle widzialnym i ultrafiolecie), JWST bada najstarsze i najzimniejsze obszary kosmosu.`;
   }
 
-  // 13. Przeszukiwanie wszystkich ciał (Słońce, 8 planet, księżyce, planety karłowate)
+  // 13. Przeszukiwanie bazy zjawisk astronomicznych (jeśli zapytanie pasuje do tytułu, identyfikatora lub obiektu)
+  for (const event of allAstronomicalEvents) {
+    const titleLower = event.title.toLowerCase();
+    const idLower = event.id.toLowerCase();
+    if (query.includes(idLower) || query.includes(titleLower)) {
+      return `### ${event.title}\n\n` +
+        `- **Typ zjawiska:** ${event.type}\n` +
+        `- **Data apogeum (szczyt):** ${new Date(event.peakDate).toLocaleString('pl-PL')}\n` +
+        `- **Czas trwania:** ${event.startDate} do ${event.endDate}\n` +
+        `- **Widoczność w Polsce:** ${event.visibilityPoland}\n` +
+        `- **Wymagany sprzęt:** ${event.equipmentRequired}\n` +
+        (event.zhr ? `- **Zenitalna liczba godzinna (ZHR):** ${event.zhr}\n` : '') +
+        (event.radiant ? `- **Radiant:** ${event.radiant}\n` : '') +
+        (event.parentBody ? `- **Ciało macierzyste:** ${event.parentBody}\n` : '') +
+        (event.magnitudeInPoland ? `- **Faza w Polsce:** ${event.magnitudeInPoland}\n` : '') +
+        `\n${event.description}\n\n` +
+        `🔭 **Wskazówki obserwacyjne:**\n${event.observationTips}`;
+    }
+  }
+
+  // 14. Przeszukiwanie wszystkich ciał (Słońce, 8 planet, księżyce, planety karłowate)
   for (const body of allCelestialBodies) {
     const plName = body.name.pl.toLowerCase();
     const enName = body.name.en.toLowerCase();
@@ -208,7 +368,8 @@ export function generateEducationalFallback(userQuery: string): string {
     `Mogę opowiedzieć Ci o:\n` +
     `- **Planetach Układu Słonecznego** (np. Merkury, Wenus, Mars, Jowisz...)\n` +
     `- **Księżycach i Planetach Karłowatych** (Księżyc Ziemi, Europa, Io, Tytan, Enceladus, Pluton, Charon, Ceres)\n` +
+    `- **Zjawiskach astronomicznych i kalendarzu nieba** (zaćmienia Słońca 2026/2027, Perseidy i Geminidy, opozycje Saturna i Marsa)\n` +
     `- **Tajemnicach astrofizyki** (czarne dziury, horyzont zdarzeń, grawitacja)\n` +
     `- **Eksploracji kosmosu** (stacja ISS, program Artemis, Teleskop Jamesa Webba, Europa Clipper)\n\n` +
-    `Zadaj mi konkretne pytanie, np. *„Czy pod lodem Europy jest ocean?”*, *„Dlaczego Pluton nie jest planetą?”* lub *„Jak szybko Księżyc oddala się od Ziemi?”*.`;
+    `Zadaj mi konkretne pytanie, np. *„Kiedy jest najbliższe zaćmienie Słońca w Polsce?”*, *„Na czym polega opozycja Saturna bez pierścieni?”* lub *„Kiedy przypadają Perseidy i jak je obserwować?”*.`;
 }

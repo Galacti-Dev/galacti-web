@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Orbit, Bot, ArrowRight, Sparkles } from "lucide-react";
+import { Orbit, Bot, ArrowRight, Sparkles, Calendar } from "lucide-react";
 import { ApodHero } from "@/components/dashboard/ApodHero";
 import { IssTrackerCard } from "@/components/dashboard/IssTrackerCard";
 import { UpcomingLaunchesCard } from "@/components/dashboard/UpcomingLaunchesCard";
 import { SpaceWeatherCard } from "@/components/dashboard/SpaceWeatherCard";
+import { UpcomingEventsCard } from "@/components/dashboard/UpcomingEventsCard";
 
 export default function DashboardPage() {
   return (
@@ -35,6 +36,14 @@ export default function DashboardPage() {
             </Link>
 
             <Link
+              href="/calendar"
+              className="flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors active:scale-95"
+            >
+              <Calendar className="h-4 w-4 text-zinc-300" />
+              <span>Kalendarz Zjawisk</span>
+            </Link>
+
+            <Link
               href="/chat"
               className="flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors active:scale-95"
             >
@@ -48,6 +57,11 @@ export default function DashboardPage() {
       {/* APOD Featured Hero */}
       <section>
         <ApodHero />
+      </section>
+
+      {/* Astronomical Events Preview */}
+      <section>
+        <UpcomingEventsCard />
       </section>
 
       {/* Space Weather & Aurora Live Monitor */}

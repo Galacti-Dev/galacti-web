@@ -1,0 +1,991 @@
+{
+  "metadata": {
+    "version": "0.5.0",
+    "epoch": "J2000.0",
+    "referenceLatitudePoland": 52.23,
+    "referenceLongitudePoland": 21.01,
+    "starsCount": 60,
+    "constellationsCount": 8,
+    "dsoCount": 6
+  },
+  "stars": [
+    {
+      "id": "uma_alpha",
+      "name": "Dubhe",
+      "bayer": "α UMa",
+      "con": "UMa",
+      "ra": 11.062,
+      "dec": 61.751,
+      "mag": 1.79,
+      "bv": 1.07,
+      "color": "#FFD2A1",
+      "spec": "K0III"
+    },
+    {
+      "id": "uma_beta",
+      "name": "Merak",
+      "bayer": "β UMa",
+      "con": "UMa",
+      "ra": 11.031,
+      "dec": 56.382,
+      "mag": 2.37,
+      "bv": -0.02,
+      "color": "#CAD8FF",
+      "spec": "A1V"
+    },
+    {
+      "id": "uma_gamma",
+      "name": "Phecda",
+      "bayer": "γ UMa",
+      "con": "UMa",
+      "ra": 11.897,
+      "dec": 53.695,
+      "mag": 2.44,
+      "bv": 0.0,
+      "color": "#D5E0FF",
+      "spec": "A0V"
+    },
+    {
+      "id": "uma_delta",
+      "name": "Megrez",
+      "bayer": "δ UMa",
+      "con": "UMa",
+      "ra": 12.257,
+      "dec": 57.032,
+      "mag": 3.31,
+      "bv": 0.08,
+      "color": "#E4ECFF",
+      "spec": "A3V"
+    },
+    {
+      "id": "uma_epsilon",
+      "name": "Alioth",
+      "bayer": "ε UMa",
+      "con": "UMa",
+      "ra": 12.9,
+      "dec": 55.96,
+      "mag": 1.77,
+      "bv": -0.02,
+      "color": "#CAD8FF",
+      "spec": "A1III"
+    },
+    {
+      "id": "uma_zeta",
+      "name": "Mizar",
+      "bayer": "ζ UMa",
+      "con": "UMa",
+      "ra": 13.399,
+      "dec": 54.925,
+      "mag": 2.23,
+      "bv": 0.02,
+      "color": "#D5E0FF",
+      "spec": "A2V"
+    },
+    {
+      "id": "uma_eta",
+      "name": "Alkaid",
+      "bayer": "η UMa",
+      "con": "UMa",
+      "ra": 13.792,
+      "dec": 49.313,
+      "mag": 1.86,
+      "bv": -0.19,
+      "color": "#AABFFF",
+      "spec": "B3V"
+    },
+    {
+      "id": "umi_alpha",
+      "name": "Polaris (Gwiazda Polarna)",
+      "bayer": "α UMi",
+      "con": "UMi",
+      "ra": 2.53,
+      "dec": 89.264,
+      "mag": 1.98,
+      "bv": 0.6,
+      "color": "#FFF4E8",
+      "spec": "F7Ib"
+    },
+    {
+      "id": "umi_beta",
+      "name": "Kochab",
+      "bayer": "β UMi",
+      "con": "UMi",
+      "ra": 14.845,
+      "dec": 74.156,
+      "mag": 2.08,
+      "bv": 1.47,
+      "color": "#FFB56C",
+      "spec": "K4III"
+    },
+    {
+      "id": "umi_gamma",
+      "name": "Pherkad",
+      "bayer": "γ UMi",
+      "con": "UMi",
+      "ra": 15.346,
+      "dec": 71.834,
+      "mag": 3.05,
+      "bv": 0.05,
+      "color": "#DEE7FF",
+      "spec": "A3II"
+    },
+    {
+      "id": "umi_delta",
+      "name": "Yildun",
+      "bayer": "δ UMi",
+      "con": "UMi",
+      "ra": 17.537,
+      "dec": 86.586,
+      "mag": 4.36,
+      "bv": 0.09,
+      "color": "#E4ECFF",
+      "spec": "A1V"
+    },
+    {
+      "id": "umi_epsilon",
+      "name": "Urodelus",
+      "bayer": "ε UMi",
+      "con": "UMi",
+      "ra": 16.766,
+      "dec": 82.037,
+      "mag": 4.21,
+      "bv": 0.9,
+      "color": "#FFE2B8",
+      "spec": "G5III"
+    },
+    {
+      "id": "umi_zeta",
+      "name": "Ahfa al Farkadain",
+      "bayer": "ζ UMi",
+      "con": "UMi",
+      "ra": 15.735,
+      "dec": 77.795,
+      "mag": 4.28,
+      "bv": 0.05,
+      "color": "#DEE7FF",
+      "spec": "A3V"
+    },
+    {
+      "id": "umi_eta",
+      "name": "Anwar al Farkadain",
+      "bayer": "η UMi",
+      "con": "UMi",
+      "ra": 16.291,
+      "dec": 75.755,
+      "mag": 4.95,
+      "bv": 0.44,
+      "color": "#FFF9F5",
+      "spec": "F5V"
+    },
+    {
+      "id": "cas_alpha",
+      "name": "Schedar",
+      "bayer": "α Cas",
+      "con": "Cas",
+      "ra": 0.675,
+      "dec": 56.537,
+      "mag": 2.24,
+      "bv": 1.17,
+      "color": "#FFC88A",
+      "spec": "K0III"
+    },
+    {
+      "id": "cas_beta",
+      "name": "Caph",
+      "bayer": "β Cas",
+      "con": "Cas",
+      "ra": 0.153,
+      "dec": 59.15,
+      "mag": 2.28,
+      "bv": 0.34,
+      "color": "#F8F9FF",
+      "spec": "F2III"
+    },
+    {
+      "id": "cas_gamma",
+      "name": "Navi",
+      "bayer": "γ Cas",
+      "con": "Cas",
+      "ra": 0.945,
+      "dec": 60.717,
+      "mag": 2.15,
+      "bv": -0.15,
+      "color": "#B5C7FF",
+      "spec": "B0IVe"
+    },
+    {
+      "id": "cas_delta",
+      "name": "Ruchbah",
+      "bayer": "δ Cas",
+      "con": "Cas",
+      "ra": 1.428,
+      "dec": 60.235,
+      "mag": 2.68,
+      "bv": 0.13,
+      "color": "#EAEEFF",
+      "spec": "A5V"
+    },
+    {
+      "id": "cas_epsilon",
+      "name": "Segin",
+      "bayer": "ε Cas",
+      "con": "Cas",
+      "ra": 1.905,
+      "dec": 63.67,
+      "mag": 3.35,
+      "bv": -0.16,
+      "color": "#B2C5FF",
+      "spec": "B3V"
+    },
+    {
+      "id": "ori_alpha",
+      "name": "Betelgeza (Betelgeuse)",
+      "bayer": "α Ori",
+      "con": "Ori",
+      "ra": 5.919,
+      "dec": 7.407,
+      "mag": 0.5,
+      "bv": 1.85,
+      "color": "#FF9E4A",
+      "spec": "M1-2Ia-ab"
+    },
+    {
+      "id": "ori_beta",
+      "name": "Rigel",
+      "bayer": "β Ori",
+      "con": "Ori",
+      "ra": 5.242,
+      "dec": -8.202,
+      "mag": 0.18,
+      "bv": -0.03,
+      "color": "#C4D4FF",
+      "spec": "B8Ia"
+    },
+    {
+      "id": "ori_gamma",
+      "name": "Bellatrix",
+      "bayer": "γ Ori",
+      "con": "Ori",
+      "ra": 5.419,
+      "dec": 6.35,
+      "mag": 1.64,
+      "bv": -0.22,
+      "color": "#A0B7FF",
+      "spec": "B2III"
+    },
+    {
+      "id": "ori_delta",
+      "name": "Mintaka (Pas Oriona)",
+      "bayer": "δ Ori",
+      "con": "Ori",
+      "ra": 5.533,
+      "dec": -0.299,
+      "mag": 2.23,
+      "bv": -0.21,
+      "color": "#A2B9FF",
+      "spec": "O9.5II"
+    },
+    {
+      "id": "ori_epsilon",
+      "name": "Alnilam (Pas Oriona)",
+      "bayer": "ε Ori",
+      "con": "Ori",
+      "ra": 5.604,
+      "dec": -1.202,
+      "mag": 1.69,
+      "bv": -0.19,
+      "color": "#AABFFF",
+      "spec": "B0Ia"
+    },
+    {
+      "id": "ori_zeta",
+      "name": "Alnitak (Pas Oriona)",
+      "bayer": "ζ Ori",
+      "con": "Ori",
+      "ra": 5.679,
+      "dec": -1.943,
+      "mag": 1.77,
+      "bv": -0.21,
+      "color": "#A2B9FF",
+      "spec": "O9.7Ib"
+    },
+    {
+      "id": "ori_kappa",
+      "name": "Saiph",
+      "bayer": "κ Ori",
+      "con": "Ori",
+      "ra": 5.796,
+      "dec": -9.67,
+      "mag": 2.07,
+      "bv": -0.18,
+      "color": "#ADCEFF",
+      "spec": "B0.5Ia"
+    },
+    {
+      "id": "lyr_alpha",
+      "name": "Wega (Vega)",
+      "bayer": "α Lyr",
+      "con": "Lyr",
+      "ra": 18.616,
+      "dec": 38.784,
+      "mag": 0.03,
+      "bv": 0.0,
+      "color": "#D5E0FF",
+      "spec": "A0Va"
+    },
+    {
+      "id": "cyg_alpha",
+      "name": "Deneb",
+      "bayer": "α Cyg",
+      "con": "Cyg",
+      "ra": 20.69,
+      "dec": 45.28,
+      "mag": 1.25,
+      "bv": 0.09,
+      "color": "#E4ECFF",
+      "spec": "A2Ia"
+    },
+    {
+      "id": "cyg_beta",
+      "name": "Albireo",
+      "bayer": "β Cyg",
+      "con": "Cyg",
+      "ra": 19.512,
+      "dec": 27.96,
+      "mag": 3.05,
+      "bv": 1.09,
+      "color": "#FFC88A",
+      "spec": "K3II"
+    },
+    {
+      "id": "cyg_gamma",
+      "name": "Sadr",
+      "bayer": "γ Cyg",
+      "con": "Cyg",
+      "ra": 20.373,
+      "dec": 40.257,
+      "mag": 2.23,
+      "bv": 0.67,
+      "color": "#FFEFD9",
+      "spec": "F8Ib"
+    },
+    {
+      "id": "cyg_delta",
+      "name": "Fawaris",
+      "bayer": "δ Cyg",
+      "con": "Cyg",
+      "ra": 19.75,
+      "dec": 45.131,
+      "mag": 2.87,
+      "bv": -0.03,
+      "color": "#CAD8FF",
+      "spec": "B9.5IV"
+    },
+    {
+      "id": "cyg_epsilon",
+      "name": "Aljanah",
+      "bayer": "ε Cyg",
+      "con": "Cyg",
+      "ra": 20.77,
+      "dec": 33.97,
+      "mag": 2.48,
+      "bv": 1.03,
+      "color": "#FFD2A1",
+      "spec": "K0III"
+    },
+    {
+      "id": "aql_alpha",
+      "name": "Altair",
+      "bayer": "α Aql",
+      "con": "Aql",
+      "ra": 19.846,
+      "dec": 8.868,
+      "mag": 0.77,
+      "bv": 0.22,
+      "color": "#F0F3FF",
+      "spec": "A7V"
+    },
+    {
+      "id": "aql_beta",
+      "name": "Alshain",
+      "bayer": "β Aql",
+      "con": "Aql",
+      "ra": 19.923,
+      "dec": 6.407,
+      "mag": 3.71,
+      "bv": 0.86,
+      "color": "#FFE5BD",
+      "spec": "G8IV"
+    },
+    {
+      "id": "aql_gamma",
+      "name": "Tarazed",
+      "bayer": "γ Aql",
+      "con": "Aql",
+      "ra": 19.771,
+      "dec": 10.613,
+      "mag": 2.72,
+      "bv": 1.52,
+      "color": "#FFB060",
+      "spec": "K3II"
+    },
+    {
+      "id": "tau_alpha",
+      "name": "Aldebaran",
+      "bayer": "α Tau",
+      "con": "Tau",
+      "ra": 4.599,
+      "dec": 16.509,
+      "mag": 0.85,
+      "bv": 1.54,
+      "color": "#FFAD5B",
+      "spec": "K5III"
+    },
+    {
+      "id": "tau_beta",
+      "name": "Elnath",
+      "bayer": "β Tau",
+      "con": "Tau",
+      "ra": 5.438,
+      "dec": 28.608,
+      "mag": 1.65,
+      "bv": -0.13,
+      "color": "#B9CBFF",
+      "spec": "B7III"
+    },
+    {
+      "id": "tau_zeta",
+      "name": "Tianguan",
+      "bayer": "ζ Tau",
+      "con": "Tau",
+      "ra": 5.627,
+      "dec": 21.143,
+      "mag": 3.01,
+      "bv": -0.19,
+      "color": "#AABFFF",
+      "spec": "B2IVe"
+    },
+    {
+      "id": "gem_alpha",
+      "name": "Kastor (Castor)",
+      "bayer": "α Gem",
+      "con": "Gem",
+      "ra": 7.577,
+      "dec": 31.888,
+      "mag": 1.58,
+      "bv": 0.04,
+      "color": "#DDE6FF",
+      "spec": "A1V"
+    },
+    {
+      "id": "gem_beta",
+      "name": "Polluks (Pollux)",
+      "bayer": "β Gem",
+      "con": "Gem",
+      "ra": 7.755,
+      "dec": 28.026,
+      "mag": 1.16,
+      "bv": 1.0,
+      "color": "#FFD5A8",
+      "spec": "K0III"
+    },
+    {
+      "id": "gem_gamma",
+      "name": "Alhena",
+      "bayer": "γ Gem",
+      "con": "Gem",
+      "ra": 6.629,
+      "dec": 16.399,
+      "mag": 1.93,
+      "bv": 0.0,
+      "color": "#D5E0FF",
+      "spec": "A1.5IV"
+    },
+    {
+      "id": "leo_alpha",
+      "name": "Regulus",
+      "bayer": "α Leo",
+      "con": "Leo",
+      "ra": 10.14,
+      "dec": 11.967,
+      "mag": 1.36,
+      "bv": -0.11,
+      "color": "#BDCEFF",
+      "spec": "B8IVn"
+    },
+    {
+      "id": "leo_beta",
+      "name": "Denebola",
+      "bayer": "β Leo",
+      "con": "Leo",
+      "ra": 11.818,
+      "dec": 14.572,
+      "mag": 2.14,
+      "bv": 0.09,
+      "color": "#E4ECFF",
+      "spec": "A3Va"
+    },
+    {
+      "id": "leo_gamma",
+      "name": "Algieba",
+      "bayer": "γ Leo",
+      "con": "Leo",
+      "ra": 10.333,
+      "dec": 19.842,
+      "mag": 2.01,
+      "bv": 1.16,
+      "color": "#FFC88A",
+      "spec": "K0III"
+    },
+    {
+      "id": "boo_alpha",
+      "name": "Arktur (Arcturus)",
+      "bayer": "α Boo",
+      "con": "Boo",
+      "ra": 14.261,
+      "dec": 19.182,
+      "mag": -0.05,
+      "bv": 1.23,
+      "color": "#FFC37E",
+      "spec": "K1.5III"
+    },
+    {
+      "id": "cma_alpha",
+      "name": "Syriusz (Sirius)",
+      "bayer": "α CMa",
+      "con": "CMa",
+      "ra": 6.752,
+      "dec": -16.716,
+      "mag": -1.46,
+      "bv": 0.01,
+      "color": "#D7E2FF",
+      "spec": "A1V"
+    },
+    {
+      "id": "cmi_alpha",
+      "name": "Procjon (Procyon)",
+      "bayer": "α CMi",
+      "con": "CMi",
+      "ra": 7.653,
+      "dec": 5.225,
+      "mag": 0.38,
+      "bv": 0.42,
+      "color": "#FFF5EC",
+      "spec": "F5IV-V"
+    },
+    {
+      "id": "aur_alpha",
+      "name": "Kapella (Capella)",
+      "bayer": "α Aur",
+      "con": "Aur",
+      "ra": 5.278,
+      "dec": 45.998,
+      "mag": 0.08,
+      "bv": 0.8,
+      "color": "#FFEBC4",
+      "spec": "G3III"
+    },
+    {
+      "id": "peg_alpha",
+      "name": "Markab",
+      "bayer": "α Peg",
+      "con": "Peg",
+      "ra": 23.079,
+      "dec": 15.205,
+      "mag": 2.49,
+      "bv": -0.04,
+      "color": "#CAD8FF",
+      "spec": "B9.5III"
+    },
+    {
+      "id": "peg_beta",
+      "name": "Scheat",
+      "bayer": "β Peg",
+      "con": "Peg",
+      "ra": 23.063,
+      "dec": 28.083,
+      "mag": 2.44,
+      "bv": 1.67,
+      "color": "#FFA551",
+      "spec": "M2.5II-IIIe"
+    },
+    {
+      "id": "peg_gamma",
+      "name": "Algenib",
+      "bayer": "γ Peg",
+      "con": "Peg",
+      "ra": 0.221,
+      "dec": 15.183,
+      "mag": 2.84,
+      "bv": -0.23,
+      "color": "#9EB5FF",
+      "spec": "B2IV"
+    },
+    {
+      "id": "and_alpha",
+      "name": "Alpheratz",
+      "bayer": "α And",
+      "con": "And",
+      "ra": 0.139,
+      "dec": 29.09,
+      "mag": 2.07,
+      "bv": -0.11,
+      "color": "#BDCEFF",
+      "spec": "B8IVpMnHg"
+    },
+    {
+      "id": "and_beta",
+      "name": "Mirach",
+      "bayer": "β And",
+      "con": "And",
+      "ra": 1.162,
+      "dec": 35.621,
+      "mag": 2.07,
+      "bv": 1.58,
+      "color": "#FFAA56",
+      "spec": "M0III"
+    },
+    {
+      "id": "and_gamma",
+      "name": "Almach",
+      "bayer": "γ And",
+      "con": "And",
+      "ra": 2.065,
+      "dec": 42.332,
+      "mag": 2.1,
+      "bv": 1.37,
+      "color": "#FFBB73",
+      "spec": "K3IIb"
+    },
+    {
+      "id": "per_alpha",
+      "name": "Mirfak",
+      "bayer": "α Per",
+      "con": "Per",
+      "ra": 3.405,
+      "dec": 49.861,
+      "mag": 1.79,
+      "bv": 0.48,
+      "color": "#FFF5EC",
+      "spec": "F5Ib"
+    },
+    {
+      "id": "per_beta",
+      "name": "Algol (Gwiazda Diabła)",
+      "bayer": "β Per",
+      "con": "Per",
+      "ra": 3.136,
+      "dec": 40.956,
+      "mag": 2.12,
+      "bv": -0.05,
+      "color": "#C7D6FF",
+      "spec": "B8V"
+    },
+    {
+      "id": "vir_alpha",
+      "name": "Spica (Kłos)",
+      "bayer": "α Vir",
+      "con": "Vir",
+      "ra": 13.42,
+      "dec": -11.161,
+      "mag": 0.98,
+      "bv": -0.23,
+      "color": "#9EB5FF",
+      "spec": "B1III-IV"
+    },
+    {
+      "id": "sco_alpha",
+      "name": "Antares",
+      "bayer": "α Sco",
+      "con": "Sco",
+      "ra": 16.49,
+      "dec": -26.432,
+      "mag": 1.06,
+      "bv": 1.83,
+      "color": "#FF9F4C",
+      "spec": "M1.5Iab-b"
+    },
+    {
+      "id": "her_alpha",
+      "name": "Rasalgethi",
+      "bayer": "α Her",
+      "con": "Her",
+      "ra": 17.245,
+      "dec": 14.39,
+      "mag": 3.31,
+      "bv": 1.45,
+      "color": "#FFB76F",
+      "spec": "M5Ib-II"
+    },
+    {
+      "id": "her_beta",
+      "name": "Kornephoros",
+      "bayer": "β Her",
+      "con": "Her",
+      "ra": 16.503,
+      "dec": 21.489,
+      "mag": 2.78,
+      "bv": 0.94,
+      "color": "#FFDEB0",
+      "spec": "G7IIIa"
+    }
+  ],
+  "constellationLines": {
+    "UMa": [
+      [
+        "uma_alpha",
+        "uma_beta"
+      ],
+      [
+        "uma_beta",
+        "uma_gamma"
+      ],
+      [
+        "uma_gamma",
+        "uma_delta"
+      ],
+      [
+        "uma_delta",
+        "uma_alpha"
+      ],
+      [
+        "uma_delta",
+        "uma_epsilon"
+      ],
+      [
+        "uma_epsilon",
+        "uma_zeta"
+      ],
+      [
+        "uma_zeta",
+        "uma_eta"
+      ]
+    ],
+    "UMi": [
+      [
+        "umi_alpha",
+        "umi_delta"
+      ],
+      [
+        "umi_delta",
+        "umi_epsilon"
+      ],
+      [
+        "umi_epsilon",
+        "umi_zeta"
+      ],
+      [
+        "umi_zeta",
+        "umi_beta"
+      ],
+      [
+        "umi_beta",
+        "umi_gamma"
+      ],
+      [
+        "umi_gamma",
+        "umi_eta"
+      ],
+      [
+        "umi_eta",
+        "umi_zeta"
+      ]
+    ],
+    "Cas": [
+      [
+        "cas_beta",
+        "cas_alpha"
+      ],
+      [
+        "cas_alpha",
+        "cas_gamma"
+      ],
+      [
+        "cas_gamma",
+        "cas_delta"
+      ],
+      [
+        "cas_delta",
+        "cas_epsilon"
+      ]
+    ],
+    "Ori": [
+      [
+        "ori_gamma",
+        "ori_alpha"
+      ],
+      [
+        "ori_gamma",
+        "ori_delta"
+      ],
+      [
+        "ori_delta",
+        "ori_epsilon"
+      ],
+      [
+        "ori_epsilon",
+        "ori_zeta"
+      ],
+      [
+        "ori_alpha",
+        "ori_zeta"
+      ],
+      [
+        "ori_delta",
+        "ori_beta"
+      ],
+      [
+        "ori_zeta",
+        "ori_kappa"
+      ],
+      [
+        "ori_beta",
+        "ori_kappa"
+      ]
+    ],
+    "Cyg": [
+      [
+        "cyg_beta",
+        "cyg_gamma"
+      ],
+      [
+        "cyg_gamma",
+        "cyg_alpha"
+      ],
+      [
+        "cyg_gamma",
+        "cyg_delta"
+      ],
+      [
+        "cyg_gamma",
+        "cyg_epsilon"
+      ]
+    ],
+    "Peg_And": [
+      [
+        "peg_alpha",
+        "peg_beta"
+      ],
+      [
+        "peg_beta",
+        "and_alpha"
+      ],
+      [
+        "and_alpha",
+        "peg_gamma"
+      ],
+      [
+        "peg_gamma",
+        "peg_alpha"
+      ],
+      [
+        "and_alpha",
+        "and_beta"
+      ],
+      [
+        "and_beta",
+        "and_gamma"
+      ]
+    ],
+    "Gem": [
+      [
+        "gem_alpha",
+        "gem_beta"
+      ],
+      [
+        "gem_beta",
+        "gem_gamma"
+      ]
+    ],
+    "Leo": [
+      [
+        "leo_alpha",
+        "leo_gamma"
+      ],
+      [
+        "leo_gamma",
+        "leo_beta"
+      ]
+    ]
+  },
+  "deepSkyObjects": [
+    {
+      "id": "M31",
+      "namePl": "Wielka Galaktyka Andromedy",
+      "nameEn": "Andromeda Galaxy",
+      "type": "spiral_galaxy",
+      "con": "And",
+      "ra": 0.712,
+      "dec": 41.269,
+      "mag": 3.44,
+      "distanceLy": 2500000,
+      "equipment": "naked_eye / binoculars",
+      "descriptionPl": "Najbliższa Ziemi wielka galaktyka spiralna, zawierająca około 1 biliona gwiazd. Przy ciemnym niebie widoczna gołym okiem jako owalna mgiełka, a w lornetce ukazuje jasne jądro i dysk."
+    },
+    {
+      "id": "M42",
+      "namePl": "Wielka Mgławica w Orionie",
+      "nameEn": "Orion Nebula",
+      "type": "diffuse_nebula",
+      "con": "Ori",
+      "ra": 5.588,
+      "dec": -5.391,
+      "mag": 4.0,
+      "distanceLy": 1344,
+      "equipment": "naked_eye / binoculars",
+      "descriptionPl": "Jeden z najjaśniejszych i najbardziej aktywnych obszarów gwiazdotwórczych na niebie. Widoczna gołym okiem w 'mieczu Oriona', w lornetce i teleskopie ujawnia strukturę gazowych skrzydeł oraz gromadę Trapez."
+    },
+    {
+      "id": "M45",
+      "namePl": "Plejady (Siedem Sióstr)",
+      "nameEn": "Pleiades",
+      "type": "open_cluster",
+      "con": "Tau",
+      "ra": 3.79,
+      "dec": 24.105,
+      "mag": 1.6,
+      "distanceLy": 444,
+      "equipment": "naked_eye",
+      "descriptionPl": "Najsłynniejsza gromada otwarta młodych błękitnych gwiazd, otoczona delikatną mgławicą refleksyjną. Gołym okiem widać 6–7 najjaśniejszych gwiazd przypominających miniaturkę Małego Wozu."
+    },
+    {
+      "id": "M13",
+      "namePl": "Wielka Gromada Kulista w Herkulesie",
+      "nameEn": "Great Globular Cluster in Hercules",
+      "type": "globular_cluster",
+      "con": "Her",
+      "ra": 16.695,
+      "dec": 36.46,
+      "mag": 5.8,
+      "distanceLy": 22200,
+      "equipment": "binoculars / telescope",
+      "descriptionPl": "Jedna z najwspanialszych gromad kulistych północnego nieba, grupująca ponad kilkaset tysięcy prastarych gwiazd w kuli o średnicy około 145 lat świetlnych."
+    },
+    {
+      "id": "M57",
+      "namePl": "Mgławica Pierścień",
+      "nameEn": "Ring Nebula",
+      "type": "planetary_nebula",
+      "con": "Lyr",
+      "ra": 18.893,
+      "dec": 33.029,
+      "mag": 8.8,
+      "distanceLy": 2570,
+      "equipment": "telescope",
+      "descriptionPl": "Klasyczna mgławica planetarna w Lutni, będąca świecącą otoczką gazu odrzuconą przez umierającego czerwonego olbrzyma z białym karłem w centrum."
+    },
+    {
+      "id": "M81_M82",
+      "namePl": "Galaktyki Bodego i Cygaro (M81 / M82)",
+      "nameEn": "Bode's Galaxy & Cigar Galaxy",
+      "type": "galaxy_pair",
+      "con": "UMa",
+      "ra": 9.927,
+      "dec": 69.066,
+      "mag": 6.9,
+      "distanceLy": 11800000,
+      "equipment": "binoculars / telescope",
+      "descriptionPl": "Słynna para galaktyk w Wielkiej Niedźwiedzicy: spiralna M81 oraz przechodząca gwałtowny wybuch formowania gwiazd (starburst) galaktyka M82."
+    }
+  ]
+}

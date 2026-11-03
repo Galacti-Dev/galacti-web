@@ -176,6 +176,113 @@ export function generateEducationalFallback(userQuery: string): string {
       `Pełną listę z odliczaniem i wskazówkami obserwacyjnymi znajdziesz w module **Kalendarz Zjawisk** w aplikacji Galacti!`;
   }
 
+  // H. Gwiazdy i Gwiazdozbiory (SkyMap Knowledge)
+  // 1. Syriusz (Sirius)
+  if (query.includes('syriusz') || query.includes('sirius')) {
+    return `### Syriusz (α CMa – Alfa Wielkiego Psa)\n\n` +
+      `**Syriusz** to najjaśniejsza gwiazda całego nocnego nieba o jasności wizualnej **-1,46 mag**.\n\n` +
+      `- **Odległość od Ziemi:** Zaledwie **8,6 roku świetlnego** (jeden z najbliższych układów gwiezdnych).\n` +
+      `- **Układ podwójny:** Syriusz A to biała gwiazda ciągu głównego typu widmowego A1V o temperaturze ~9940 K, a Syriusz B („Szczeniak”) to pierwszy w historii odkryty biały karzeł o masie zbliżonej do Słońca ściśniętej do rozmiarów Ziemi!\n` +
+      `- **Widoczność w Polsce:** Świeci nisko nad południowym horyzontem w gwiazdozbiorze Wielkiego Psa w miesiącach zimowych (od grudnia do marca). Charakterystycznie silnie migocze na niebiesko-biało przez gęste warstwy ziemskiej atmosfery.`;
+  }
+
+  // 2. Betelgeza (Betelgeuse)
+  if (query.includes('betelgez') || query.includes('betelgeuse')) {
+    return `### Betelgeza (α Ori – Alfa Oriona)\n\n` +
+      `**Betelgeza** to spektakularny czerwony nadolbrzym w gwiazdozbiorze Oriona (jasność ok. **+0,5 mag**, zmienna).\n\n` +
+      `- **Gigantyczne rozmiary:** Jej promień wynosi od 700 do nawet 900 promieni Słońca – gdyby umieścić ją w centrum Układu Słonecznego, jej powierzchnia sięgałaby orbity Jowisza!\n` +
+      `- **Przyszła supernowa:** Betelgeza znajduje się w końcowym stadium ewolucji gwiazdowej. W ciągu najbliższych 100 000 lat eksploduje jako supernowa typu II. Kiedy to nastąpi, jej blask na ziemskim niebie porównywalny będzie z Księżycem w pełni i będzie widoczna nawet w ciągu dnia!\n` +
+      `- **Wielkie ściemnienie (2019/2020):** Gwiazda wyrzuciła w przestrzeń gigantyczny obłok materii, który po ostygnięciu w pył przejściowo przesłonił znaczną część jej tarczy.`;
+  }
+
+  // 3. Wega (Vega)
+  if (query.includes('wega') || query.includes('vega')) {
+    return `### Wega (α Lyr – Alfa Lutni)\n\n` +
+      `**Wega** to piąta najjaśniejsza gwiazda na nocnym niebie i druga na półkuli północnej (**0,03 mag**).\n\n` +
+      `- **Wzorzec jasności:** Przez dziesięciolecia Wega stanowiła astronomiczny punkt odniesienia dla skali wielkości gwiazdowych (przyjmowano dla niej dokładnie 0,00 mag).\n` +
+      `- **Trójkąt Letni:** Wraz z Denebem (Łabędź) i Altairem (Orzeł) tworzy słynny asteryzm Trójkąta Letniego, dominujący na letnim i jesiennym niebie w Polsce w zenicie.\n` +
+      `- **Dysk protoplanetarny:** W 1983 roku satelita IRAS odkrył wokół Wegi rozległy dysk pyłowo-odłamkowy, co było pierwszym dowodem na istnienie układów planetarnych wokół innych gwiazd.\n` +
+      `- **Dawna i przyszła Gwiazda Polarna:** Na skutek precesji osi Ziemi około 12 000 lat p.n.e. Wega wskazywała północny biegun nieba i ponownie stanie się Gwiazdą Polarną za około 11 500 lat!`;
+  }
+
+  // 4. Gwiazda Polarna (Polaris)
+  if (query.includes('polarna') || query.includes('polaris') || query.includes('gwiazda polarna')) {
+    return `### Gwiazda Polarna (α UMi – Polaris / Alfa Małej Niedźwiedzicy)\n\n` +
+      `**Gwiazda Polarna** to najważniejsza gwiazda nawigacyjna półkuli północnej (**1,98 mag**).\n\n` +
+      `- **Położenie:** Znajduje się zaledwie ok. **0,7 stopnia od Północnego Bieguna Niebieskiego**, dzięki czemu całe niebo zdaje się obracać wokół niej, a ona sama pozostaje nieruchoma przez całą dobę i rok.\n` +
+      `- **Szerokość geograficzna obserwatora:** Wysokość Gwiazdy Polarnej nad północnym horyzontem odpowiada dokładnie szerokości geograficznej miejsca obserwacji (w Warszawie wynosi ok. **52°14'**).\n` +
+      `- **Mit jasności:** Wbrew powszechnemu mitowi Gwiazda Polarna wcale nie jest najjaśniejszą gwiazdą na niebie (zajmuje dopiero 48. miejsce pod względem jasności!).\n` +
+      `- **Jak ją odnaleźć:** Odmierz odcinek łączący tylne koła Wielkiego Wozu (Merak i Dubhe) i przedłuż go w górę około 5-krotnie – trafisz prosto w Gwiazdę Polarną na końcu dyszla Małego Wozu.`;
+  }
+
+  // 5. Obiekty Messiera: M31 (Andromeda), M42 (Orion), M45 (Plejady)
+  if (query.includes('m31') || query.includes('andromed')) {
+    return `### Wielka Galaktyka Andromedy (M31 / NGC 224)\n\n` +
+      `**Galaktyka Andromedy** to potężna galaktyka spiralna i najbliższy wielki sąsiad naszej Drogi Mlecznej.\n\n` +
+      `- **Odległość:** Około **2,5 miliona lat świetlnych** – jest to najdalszy obiekt we Wszechświecie widoczny nieuzbrojonym ludzkim okiem!\n` +
+      `- **Skala:** Zawiera około **1 biliona gwiazd** (ponad dwukrotnie więcej niż Droga Mleczna) o średnicy dysku ponad 220 000 lat świetlnych.\n` +
+      `- **Kolizja z Drogą Mleczną:** Za około 4,5 miliarda lat Galaktyka Andromedy i Droga Mleczna zderzą się i połączą w jedną olbrzymią galaktykę eliptyczną (tzw. Milkomeda).\n` +
+      `- **Obserwacja:** W Polsce widoczna jesienią i zimą wysoko na niebie w gwiazdozbiorze Andromedy. W lornetce ukazuje jasne owalne jądro i mgławicowe halo.`;
+  }
+
+  if (query.includes('m42') || (query.includes('mgławic') && query.includes('orion'))) {
+    return `### Wielka Mgławica w Orionie (M42 / NGC 1976)\n\n` +
+      `**Mgławica Oriona** to najjaśniejsza i najbardziej spektakularna mgławica dyfuzyjna na nocnym niebie (**4,0 mag**).\n\n` +
+      `- **Gwiezdny żłobek:** Znajduje się ok. **1344 lata świetlne** od Ziemi. Jest to potężny obłok gazu i pyłu wodorowego, w którym na naszych oczach rodzą się setki nowych gwiazd i dysków protoplanetarnych.\n` +
+      `- **Gromada Trapez:** W sercu mgławicy świecą cztery młode, masywne gwiazdy tworzące asteryzm Trapezu, których intensywne promieniowanie ultrafioletowe jonizuje gaz, zmuszając go do świecenia na zielonkawo-czerwono.\n` +
+      `- **Obserwacja:** Widoczna gołym okiem poniżej trzech gwiazd Pasa Oriona jako 'miecz Oriona'. Już mała lornetka ukazuje charakterystyczne gazowe skrzydła.`;
+  }
+
+  if (query.includes('m45') || query.includes('plejad') || query.includes('siedem sióstr') || query.includes('siedem siostr')) {
+    return `### Plejady (M45 – Siedem Sióstr)\n\n` +
+      `**Plejady** to najsłynniejsza i najpiękniejsza gromada otwarta gwiazd w gwiazdozbiorze Byka (**1,6 mag**).\n\n` +
+      `- **Wiek i odległość:** Młoda gromada licząca zaledwie ok. 100 milionów lat, oddalona o **444 lata świetlne** od Ziemi.\n` +
+      `- **Błękitne olbrzymy i mgławica refleksyjna:** Składa się z setek błękitnych gwiazd typu widmowego B. Gwiazdy te przedzierają się przez obłok pyłu międzygwiazdowego, który rozprasza ich światło, tworząc zjawiskową szafirową mgławicę refleksyjną widoczną na fotografiach.\n` +
+      `- **Widok gołym okiem:** Większość ludzi dostrzega 6–7 najjaśniejszych gwiazd (Alcyone, Electra, Maia, Merope, Taygeta, Celaeno, Asterope) układających się w miniaturowy wózek. W lornetce pole widzenia wypełnia się dziesiątkami skrzących punktów.`;
+  }
+
+  // 6. Gwiazdozbiory (Wielka Niedźwiedzica, Orion, Kasjopeja, Łabędź, Byk, Bliźnięta, Lew)
+  if (query.includes('wielki wóz') || query.includes('wielki woz') || query.includes('wielka niedźwiedzica') || query.includes('wielka niedzwiedzica')) {
+    return `### Wielka Niedźwiedzica (Ursa Major – UMa) i Wielki Wóz\n\n` +
+      `- **Wielki Wóz:** Najbardziej rozpoznawalny asteryzm północnego nieba złożony z 7 jasnych gwiazd: Dubhe, Merak, Phecda, Megrez, Alioth, Mizar (z Alkiem – słynny test wzroku) i Alkaid.\n` +
+      `- **Gwiazdozbiór okołobiegunowy:** W Polsce nigdy nie zachodzi pod horyzont (jest widoczny przez cały rok o każdej porze nocy).\n` +
+      `- **Drogowskaz na niebie:** Odcinek Merak-Dubhe wskazuje Gwiazdę Polarną, a łuk dyszla prowadzi do Arktura (Wolarz) i Spiki (Panna).`;
+  }
+
+  if (query.includes('orion') && !query.includes('m42')) {
+    return `### Gwiazdozbiór Oriona (Orion – Ori)\n\n` +
+      `Król zimowego nieba, jeden z najwspanialszych i najbardziej wyrazistych gwiazdozbiorów.\n\n` +
+      `- **Pas Oriona:** Trzy ułożone w równej linii jasne gwiazdy: Alnitak, Alnilam i Mintaka.\n` +
+      `- **Dwa giganty:** W lewym górnym rogu świeci czerwony nadolbrzym **Betelgeza**, a po przekątnej na dole błękitno-biały superolbrzym **Rigel** (-0,12 mag).\n` +
+      `- **Głębokie niebo:** W mieczu Oriona znajduje się Wielka Mgławica Oriona (M42) oraz słynna Mgławica Koński Łeb (Barnard 33).`;
+  }
+
+  if (query.includes('kasjopej') || query.includes('kasjopea') || query.includes('cassiopeia')) {
+    return `### Gwiazdozbiór Kasjopei (Cassiopeia – Cas)\n\n` +
+      `- **Charakterystyczny kształt:** Jasne gwiazdy (Schedar, Caph, Gamma Cas, Ruchbah, Segin) tworzą na niebie wyrazistą literę **„W”** (lub „M” zależnie od pory nocy).\n` +
+      `- **Położenie:** Leży po przeciwnej stronie Gwiazdy Polarnej niż Wielki Wóz na tle wstęgi Drogi Mlecznej.\n` +
+      `- **Obiekty:** Zawiera liczne gromady otwarte (np. Gromada E.T. – NGC 457) oraz pozostałości po supernowych (Cas A, supernowa Tycho Brahego z 1572 r.).`;
+  }
+
+  // 7. Ogólne zapytania o Mapę Nieba / SkyMap / gwiazdozbiory / gwiazdy
+  if (
+    query.includes('mapa nieba') ||
+    query.includes('mapie nieba') ||
+    query.includes('skymap') ||
+    query.includes('gwiazdozbior') ||
+    query.includes('gwiazdozbiór') ||
+    query.includes('najjaśniejsz') ||
+    query.includes('najjansniejsz')
+  ) {
+    return `### Interaktywna Mapa Nieba Galacti (SkyMap 2D/3D)\n\n` +
+      `Aplikacja Galacti oferuje interaktywny moduł **SkyMap** z fizycznym przeliczaniem współrzędnych sferycznych w czasie rzeczywistym dla współrzędnych Polski:\n\n` +
+      `- **Katalog 60 najjaśniejszych gwiazd:** Syriusz (-1,46 mag), Wega (0,03 mag), Kapella, Rigel, Betelgeza, Arktur, Aldebaran, Gwiazda Polarna i inne z barwami zgodnymi ze wskaźnikiem $B-V$.\n` +
+      `- **8 głównych konstelacji:** Wielka Niedźwiedzica (UMa), Mała Niedźwiedzica (UMi), Orion (Ori), Kasjopeja (Cas), Łabędź (Cyg), Byk (Tau), Bliźnięta (Gem), Lew (Leo).\n` +
+      `- **Obiekty Messiera (DSO):** Galaktyka Andromedy (M31), Mgławica Oriona (M42), Plejady (M45), Gromada Kulista w Herkulesie (M13), Mgławica Pierścień (M57).\n` +
+      `- **Dwa tryby projekcji:** Trójwymiarowa sfera niebieska 3D (R3F) oraz obrotowa planisfaera 2D z linią horyzontu i stronami świata.\n\n` +
+      `Zapytaj mnie o dowolną gwiazdę (np. *„Opowiedz o Betelgezie”*, *„Czym jest Syriusz B?”*) lub obiekt głębokiego nieba!`;
+  }
+
   // 1. Ziemia & Księżyc Ziemi (Earth's Moon)
   if (
     query.includes('oddalanie') ||

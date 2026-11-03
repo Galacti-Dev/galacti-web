@@ -195,3 +195,64 @@ export interface AstronomicalEvent {
   observationTips: string;
 }
 
+export interface EquatorialCoord {
+  ra: number;   // Rektascensja w godzinach (0 - 24)
+  dec: number;  // Deklinacja w stopniach (-90 do +90)
+}
+
+export interface HorizontalCoord {
+  alt: number;  // Wysokość w stopniach (-90 do +90)
+  az: number;   // Azymut w stopniach (0 do 360, 0 = N, 90 = E, 180 = S, 270 = W)
+  visible: boolean;
+}
+
+export interface StarData {
+  id: string;
+  name: string;
+  bayer: string;
+  con: string;
+  ra: number;
+  dec: number;
+  mag: number;
+  bv: number;
+  color: string;
+  spec: string;
+  horizontal?: HorizontalCoord;
+}
+
+export type ConstellationLine = [string, string] | string[];
+
+export interface DeepSkyObject {
+  id: string;
+  name?: string;
+  namePl: string;
+  nameEn: string;
+  type: string;
+  con: string;
+  ra: number;
+  dec: number;
+  mag: number;
+  distanceLy: number;
+  equipment: string;
+  descriptionPl: string;
+  horizontal?: HorizontalCoord;
+}
+
+export interface SkyMapMetadata {
+  version: string;
+  epoch: string;
+  referenceLatitudePoland: number;
+  referenceLongitudePoland: number;
+  starsCount: number;
+  constellationsCount: number;
+  dsoCount: number;
+}
+
+export interface SkyMapCatalog {
+  metadata: SkyMapMetadata;
+  stars: StarData[];
+  constellationLines: Record<string, ConstellationLine[]>;
+  deepSkyObjects: DeepSkyObject[];
+}
+
+

@@ -71,7 +71,11 @@ export default function ChatPage() {
         const assistantMsg: Message = {
           id: createMessageId("assistant"),
           sender: "assistant",
-          text: data.reply || data.text,
+          text:
+            data.reply ||
+            data.text ||
+            data.message?.content ||
+            "Przepraszam, nie udało się uzyskać odpowiedzi.",
         };
         setMessages((prev) => [...prev, assistantMsg]);
       } else {

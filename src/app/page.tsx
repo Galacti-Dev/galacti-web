@@ -41,7 +41,7 @@ export default function DashboardPage() {
               className="flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors active:scale-95"
             >
               <Telescope className="h-4 w-4 text-zinc-300" />
-              <span>Mapa Nieba 2D/3D</span>
+              <span>Interaktywna Mapa Nieba</span>
             </Link>
 
             <Link

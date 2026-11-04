@@ -123,7 +123,7 @@ export function CurrentSkyCard() {
           className="group flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-black shadow-lg shadow-white/10 transition-all hover:bg-zinc-200 hover:scale-105 active:scale-95 shrink-0"
         >
           <Telescope className="h-4 w-4 text-black group-hover:rotate-12 transition-transform" />
-          <span>Otwórz Mapę 2D/3D</span>
+          <span>Otwórz Mapę Nieba</span>
           <ArrowRight className="h-4 w-4 text-black" />
         </Link>
       </div>

@@ -43,9 +43,9 @@ export function Navbar() {
     },
     {
       href: "/skymap",
-      label: "Mapa Nieba 2D/3D",
+      label: "Mapa Nieba",
       icon: Sparkles,
-      description: "Gwiazdy i konstelacje",
+      description: "Interaktywna planisfera",
     },
     {
       href: "/calendar",

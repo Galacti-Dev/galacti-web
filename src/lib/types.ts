@@ -255,4 +255,57 @@ export interface SkyMapCatalog {
   deepSkyObjects: DeepSkyObject[];
 }
 
+export interface FOVPreset {
+  id: string;
+  name: string;
+  fovDeg: number;
+  description: string;
+  reticle: "circle" | "telrad" | "crosshair";
+}
+
+export const FOV_PRESETS: FOVPreset[] = [
+  {
+    id: "none",
+    name: "Wyłączony",
+    fovDeg: 0,
+    description: "Brak nakładki symulatora",
+    reticle: "circle",
+  },
+  {
+    id: "binocular_10x50",
+    name: "Lornetka 10x50 (6.5°)",
+    fovDeg: 6.5,
+    description: "Szerokie pole lornetki astronomicznej ~6.5°",
+    reticle: "circle",
+  },
+  {
+    id: "finder_8x50",
+    name: "Szukacz 8x50 (5.0°)",
+    fovDeg: 5.0,
+    description: "Szukacz optyczny 5° z krzyżem nitek",
+    reticle: "crosshair",
+  },
+  {
+    id: "telrad",
+    name: "Celownik Telrad (0.5°/2°/4°)",
+    fovDeg: 4.0,
+    description: "3 koncentryczne okręgi projekcyjne Telrad",
+    reticle: "telrad",
+  },
+  {
+    id: "eyepiece_wide",
+    name: "Okular 25mm – Teleskop (1.8°)",
+    fovDeg: 1.8,
+    description: "Szeroki okular przeglądowy do DSO",
+    reticle: "circle",
+  },
+  {
+    id: "eyepiece_planetary",
+    name: "Okular 9mm – Planetarny (0.8°)",
+    fovDeg: 0.8,
+    description: "Duże powiększenie, wąskie pole ~0.8°",
+    reticle: "crosshair",
+  },
+];
+
 

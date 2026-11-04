@@ -3,11 +3,12 @@
 import { useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Pause, Orbit, AlertTriangle, ArrowLeft, RefreshCw, RotateCcw } from "lucide-react";
+import { Pause, Orbit, AlertTriangle, ArrowLeft, RefreshCw, RotateCcw, Film, Scale } from "lucide-react";
 import { CelestialBodyData } from "@/lib/types";
 import planetsRaw from "@/data/planets.json";
 import moonsAndDwarfsRaw from "@/data/moons_and_dwarfs.json";
 import { PlanetInfoOverlay } from "./PlanetInfoOverlay";
+import { ScaleComparatorModal } from "./ScaleComparatorModal";
 
 const planets = planetsRaw as CelestialBodyData[];
 const moonsAndDwarfs = moonsAndDwarfsRaw as CelestialBodyData[];
@@ -56,6 +57,8 @@ export function SolarViewer() {
   const [selectedPlanet, setSelectedPlanet] = useState<CelestialBodyData | null>(null);
   const [speedMultiplier, setSpeedMultiplier] = useState<number>(1);
   const [resetCameraTrigger, setResetCameraTrigger] = useState<number>(0);
+  const [isCinematicMode, setIsCinematicMode] = useState<boolean>(false);
+  const [isScaleModalOpen, setIsScaleModalOpen] = useState<boolean>(false);
   const webglSupported = useSyncExternalStore(
     emptySubscribe,
     () => isWebGLAvailable(),
@@ -99,6 +102,14 @@ export function SolarViewer() {
           </Link>
 
           <button
+            onClick={() => setIsScaleModalOpen(true)}
+            className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/20 transition-all cursor-pointer"
+          >
+            <Scale className="h-4 w-4" />
+            <span>Porównaj skalę planet (2D)</span>
+          </button>
+
+          <button
             onClick={() => window.location.reload()}
             className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
           >
@@ -106,6 +117,13 @@ export function SolarViewer() {
             <span>Odśwież stronę</span>
           </button>
         </div>
+
+        <ScaleComparatorModal
+          isOpen={isScaleModalOpen}
+          onClose={() => setIsScaleModalOpen(false)}
+          initialPlanet={selectedPlanet}
+          onSelectPlanet={(body) => setSelectedPlanet(body)}
+        />
       </div>
     );
   }
@@ -118,7 +136,27 @@ export function SolarViewer() {
         onSelectPlanet={setSelectedPlanet}
         speedMultiplier={speedMultiplier}
         resetTrigger={resetCameraTrigger}
+        isCinematicMode={isCinematicMode}
       />
+
+      {/* Cinematic Mode Active Banner */}
+      {isCinematicMode && (
+        <div className="pointer-events-auto absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 rounded-full border border-white/20 bg-zinc-950/90 px-4 py-1.5 text-xs text-zinc-200 backdrop-blur-xl shadow-2xl animate-in fade-in slide-in-from-top-3">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+          </span>
+          <span className="font-semibold tracking-wider uppercase text-[11px] text-white">
+            Tryb Kinowy • Cinematic Orbit
+          </span>
+          <button
+            onClick={() => setIsCinematicMode(false)}
+            className="ml-2 rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 text-[10px] font-semibold text-zinc-200 hover:bg-white/20 hover:text-white transition-colors"
+          >
+            Wyjdź
+          </button>
+        </div>
+      )}
 
       {/* Top Left Title & Controls Overlay */}
       <div className="pointer-events-none absolute left-3 top-3 right-3 sm:right-auto sm:left-6 sm:top-6 z-10 flex flex-col gap-2 sm:gap-3">
@@ -187,6 +225,31 @@ export function SolarViewer() {
             </div>
           </div>
 
+          {/* Cinematic & Scale tools */}
+          <div className="mt-2 sm:mt-2.5 grid grid-cols-2 gap-1.5 border-t border-white/10 pt-2 sm:pt-2.5">
+            <button
+              onClick={() => setIsCinematicMode((prev) => !prev)}
+              className={`flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] sm:text-xs font-medium transition-all ${
+                isCinematicMode
+                  ? "bg-white text-black font-semibold shadow-md shadow-white/20"
+                  : "border border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white"
+              }`}
+              title="Włącz/wyłącz płynny kinowy przelot kamery"
+            >
+              <Film className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+              <span>{isCinematicMode ? "Kinowy ON" : "Tryb Kinowy"}</span>
+            </button>
+
+            <button
+              onClick={() => setIsScaleModalOpen(true)}
+              className="flex items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-[11px] sm:text-xs font-medium text-zinc-300 hover:bg-white/10 hover:text-white transition-all"
+              title="Otwórz porównywarkę skali ciał niebieskich"
+            >
+              <Scale className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+              <span>Porównaj skalę</span>
+            </button>
+          </div>
+
           {/* Reset Camera View button */}
           <div className="mt-2 sm:mt-2.5 border-t border-white/10 pt-2 sm:pt-2.5">
             <button
@@ -250,6 +313,15 @@ export function SolarViewer() {
         planet={selectedPlanet}
         onClose={() => setSelectedPlanet(null)}
         onSelectPlanet={setSelectedPlanet}
+        onOpenScaleComparator={() => setIsScaleModalOpen(true)}
+      />
+
+      {/* Scale Comparator Modal */}
+      <ScaleComparatorModal
+        isOpen={isScaleModalOpen}
+        onClose={() => setIsScaleModalOpen(false)}
+        initialPlanet={selectedPlanet}
+        onSelectPlanet={(body) => setSelectedPlanet(body)}
       />
     </div>
   );

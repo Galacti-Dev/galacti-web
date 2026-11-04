@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
-  Layers,
   Clock,
   MapPin,
   Plus,
@@ -14,10 +13,16 @@ import {
   LocateFixed,
   Info,
   X,
+  Maximize,
+  Minimize,
+  Keyboard,
+  Crosshair,
+  Target,
 } from "lucide-react";
 import { SkyMapPlanisphere2D } from "@/components/skymap/SkyMapPlanisphere2D";
 import { StarInfoCard } from "@/components/skymap/StarInfoCard";
-import { StarData, DeepSkyObject, SkyMapCatalog } from "@/lib/types";
+import { KeyboardShortcutsModal } from "@/components/skymap/KeyboardShortcutsModal";
+import { StarData, DeepSkyObject, SkyMapCatalog, FOV_PRESETS } from "@/lib/types";
 import rawSkyMap from "@/data/skymap_data.json";
 import {
   getLocalSiderealTime,
@@ -94,10 +99,19 @@ export default function SkyMapPage() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playSpeed, setPlaySpeed] = useState<number>(60); // minutes per real second
 
+  // Fullscreen & Observatory HUD state
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isObservatoryMode, setIsObservatoryMode] = useState(false);
+  const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+
+  // FOV Simulator Preset
+  const [fovPresetId, setFovPresetId] = useState<string>("none");
+
   // Search query & focus state
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [targetFocus, setTargetFocus] = useState<{ x: number; y: number } | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Layers
   const [showConstellations, setShowConstellations] = useState(true);
@@ -118,6 +132,19 @@ export default function SkyMapPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSimulatedTime(new Date());
+  }, []);
+
+  // Listen to fullscreenchange events
+  useEffect(() => {
+    const handleFsChange = () => {
+      const active = Boolean(document.fullscreenElement);
+      setIsFullscreen(active);
+      if (active) {
+        setIsObservatoryMode(true);
+      }
+    };
+    document.addEventListener("fullscreenchange", handleFsChange);
+    return () => document.removeEventListener("fullscreenchange", handleFsChange);
   }, []);
 
   // Live real-time clock interval (updates every 10s when isLive is true)
@@ -228,6 +255,108 @@ export default function SkyMapPage() {
       return next;
     });
   }, []);
+
+  // Fullscreen Toggle
+  const toggleFullscreen = useCallback(async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+        setIsObservatoryMode(true);
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch {
+      // Fallback: toggle observatory mode without native full screen
+      setIsObservatoryMode((prev) => !prev);
+    }
+  }, []);
+
+  // Focus on Selected Object
+  const handleFocusSelected = useCallback(() => {
+    if (!selectedObject) return;
+    if (selectedObject.type === "star") {
+      const s = selectedObject.data as StarData;
+      if (s.horizontal) {
+        const proj = horizontalToPlanisphere2D(s.horizontal.alt, s.horizontal.az, CX, CY, RADIUS);
+        setTargetFocus({ x: proj.x, y: proj.y });
+      }
+    } else if (selectedObject.type === "dso") {
+      const d = selectedObject.data as DeepSkyObject;
+      if (d.horizontal) {
+        const proj = horizontalToPlanisphere2D(d.horizontal.alt, d.horizontal.az, CX, CY, RADIUS);
+        setTargetFocus({ x: proj.x, y: proj.y });
+      }
+    }
+  }, [selectedObject]);
+
+  // Global Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isInput =
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable);
+
+      if (e.key === "Escape") {
+        if (isSearchOpen) {
+          setIsSearchOpen(false);
+          setSearchQuery("");
+        }
+        if (isShortcutsModalOpen) {
+          setIsShortcutsModalOpen(false);
+        }
+        if (selectedObject) {
+          setSelectedObject(null);
+        }
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+        return;
+      }
+
+      // Do not intercept if user is typing
+      if (isInput) return;
+
+      if (e.code === "Space") {
+        e.preventDefault();
+        setIsLive(false);
+        setIsPlaying((p) => !p);
+      } else if (e.key === "[") {
+        e.preventDefault();
+        handleShiftTime(-1);
+      } else if (e.key === "]") {
+        e.preventDefault();
+        handleShiftTime(1);
+      } else if (e.key === "/" && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setIsSearchOpen(true);
+        setTimeout(() => searchInputRef.current?.focus(), 50);
+      } else if (e.key === "?" || (e.key === "/" && e.shiftKey)) {
+        e.preventDefault();
+        setIsShortcutsModalOpen((prev) => !prev);
+      } else if (e.key === "f" || e.key === "F") {
+        e.preventDefault();
+        handleFocusSelected();
+      } else if (e.key === "p" || e.key === "P") {
+        e.preventDefault();
+        setIsObservatoryMode((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    isSearchOpen,
+    isShortcutsModalOpen,
+    selectedObject,
+    handleShiftTime,
+    handleFocusSelected,
+  ]);
 
   // GPS Geolocation
   const handleRequestGPS = useCallback(() => {
@@ -359,347 +488,394 @@ export default function SkyMapPage() {
     simulatedTime.getHours() * 60 + simulatedTime.getMinutes();
 
   return (
-    <div className="min-h-screen bg-[#050508] text-zinc-100 flex flex-col">
-      {/* Top Header */}
-      <div className="border-b border-white/10 bg-zinc-950/90 px-4 sm:px-6 py-3.5 backdrop-blur-xl sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-white/10 text-zinc-200 border border-white/15">
-                <Sparkles className="h-3 w-3 text-zinc-300" /> Planisfera Nieba 2D
-              </span>
-              <span className="text-zinc-600">•</span>
-              <span className="text-xs text-zinc-400 font-mono">
-                {activeCity.name} ({activeCity.coords})
-              </span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white mt-0.5">
-              Interaktywna Mapa Nieba
-            </h1>
-            <p className="text-xs text-zinc-400 max-w-xl">
-              Precyzyjna projekcja azymutalna sfery niebieskiej widocznej z Polski z uwzględnieniem czasu gwiazdowego (LST), Drogi Mlecznej i wysokości nad horyzontem.
-            </p>
-          </div>
-
-          {/* Search Input Bar */}
-          <div className="relative w-full md:w-80">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onFocus={() => setIsSearchOpen(true)}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setIsSearchOpen(true);
-                }}
-                placeholder="Szukaj gwiazdy, konstelacji lub DSO..."
-                className="w-full rounded-xl border border-white/10 bg-zinc-900/80 pl-9 pr-8 py-1.5 text-xs text-white placeholder-zinc-500 focus:border-white focus:outline-none focus:ring-1 focus:ring-white transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
+    <div className={`bg-[#050508] text-zinc-100 flex flex-col ${isObservatoryMode ? "h-screen overflow-hidden" : "min-h-screen"}`}>
+      {/* Top Header (Collapsed in Observatory / Fullscreen Mode) */}
+      {!isObservatoryMode && (
+        <div className="border-b border-white/10 bg-zinc-950/90 px-4 sm:px-6 py-3.5 backdrop-blur-xl sticky top-0 z-20">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-white/10 text-zinc-200 border border-white/15">
+                  <Sparkles className="h-3 w-3 text-zinc-300" /> Planisfera Nieba 2D
+                </span>
+                <span className="text-zinc-600">•</span>
+                <span className="text-xs text-zinc-400 font-mono">
+                  {activeCity.name} ({activeCity.coords})
+                </span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white mt-0.5">
+                Interaktywna Mapa Nieba
+              </h1>
+              <p className="text-xs text-zinc-400 max-w-xl">
+                Precyzyjna projekcja azymutalna sfery niebieskiej z Polski z czasem gwiazdowym (LST), Drogą Mleczną, symulatorem FOV i wykresem widoczności 24h.
+              </p>
             </div>
 
-            {/* Autocomplete Dropdown */}
-            {isSearchOpen && searchResults.length > 0 && (
-              <div className="absolute left-0 right-0 top-full mt-2 rounded-2xl border border-white/15 bg-zinc-950/95 p-2 shadow-2xl backdrop-blur-2xl z-50 max-h-72 overflow-y-auto space-y-1">
-                {searchResults.map((res) => (
-                  <button
-                    key={`${res.type}-${res.id}`}
-                    onClick={() => handleSelectSearchResult(res)}
-                    className="w-full flex items-center justify-between p-2 rounded-xl text-left hover:bg-white/10 transition-colors group"
-                  >
-                    <div>
-                      <div className="text-xs font-semibold text-white group-hover:text-white">
-                        {res.title}
-                      </div>
-                      <div className="text-[10px] text-zinc-400">{res.subtitle}</div>
-                    </div>
-                    <span
-                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-medium border ${
-                        res.isVisible
-                          ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
-                          : "bg-zinc-800 text-zinc-500 border-zinc-700"
-                      }`}
+            {/* Header Right Actions */}
+            <div className="flex items-center gap-2 w-full md:w-auto">
+              {/* Search Input Bar */}
+              <div className="relative flex-1 md:w-72">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onFocus={() => setIsSearchOpen(true)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setIsSearchOpen(true);
+                    }}
+                    placeholder="Szukaj obiektów (klawisz /)..."
+                    className="w-full rounded-xl border border-white/10 bg-zinc-900/80 pl-9 pr-8 py-1.5 text-xs text-white placeholder-zinc-500 focus:border-white focus:outline-none focus:ring-1 focus:ring-white transition-all"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
                     >
-                      <span
-                        className={`h-1.5 w-1.5 rounded-full ${
-                          res.isVisible ? "bg-emerald-400" : "bg-zinc-600"
-                        }`}
-                      />
-                      {res.isVisible ? "Nad horyzontem" : "Pod horyzontem"}
-                    </span>
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Autocomplete Dropdown */}
+                {isSearchOpen && searchResults.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full mt-2 rounded-2xl border border-white/15 bg-zinc-950/95 p-2 shadow-2xl backdrop-blur-2xl z-50 max-h-72 overflow-y-auto space-y-1">
+                    {searchResults.map((res) => (
+                      <button
+                        key={`${res.type}-${res.id}`}
+                        onClick={() => handleSelectSearchResult(res)}
+                        className="w-full flex items-center justify-between p-2 rounded-xl text-left hover:bg-white/10 transition-colors group cursor-pointer"
+                      >
+                        <div>
+                          <div className="text-xs font-semibold text-white group-hover:text-white">
+                            {res.title}
+                          </div>
+                          <div className="text-[10px] text-zinc-400">{res.subtitle}</div>
+                        </div>
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-medium border ${
+                            res.isVisible
+                              ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
+                              : "bg-zinc-800 text-zinc-500 border-zinc-700"
+                          }`}
+                        >
+                          <span
+                            className={`h-1.5 w-1.5 rounded-full ${
+                              res.isVisible ? "bg-emerald-400" : "bg-zinc-600"
+                            }`}
+                          />
+                          {res.isVisible ? "Nad horyzontem" : "Pod horyzontem"}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Shortcuts button */}
+              <button
+                onClick={() => setIsShortcutsModalOpen(true)}
+                title="Skróty klawiszowe (klawisz ?)"
+                className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-zinc-900/80 text-zinc-300 hover:bg-white/10 hover:text-white transition-colors cursor-pointer shrink-0"
+              >
+                <Keyboard className="h-4 w-4" />
+              </button>
+
+              {/* Fullscreen / Observatory Toggle */}
+              <button
+                onClick={() => {
+                  setIsObservatoryMode(true);
+                  toggleFullscreen();
+                }}
+                title="Pełnoekranowy tryb Obserwatorium (Planetarium HUD)"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/5 text-xs text-zinc-200 hover:bg-white/15 hover:text-white transition-colors cursor-pointer shrink-0"
+              >
+                <Maximize className="h-3.5 w-3.5 text-zinc-300" />
+                <span className="hidden sm:inline font-medium">Obserwatorium</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Control Toolbar (Collapsed in Observatory Mode) */}
+      {!isObservatoryMode && (
+        <div className="border-b border-white/10 bg-zinc-950/60 px-4 sm:px-6 py-2.5 backdrop-blur-md z-10 space-y-2.5">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-2.5 text-xs">
+            {/* Location Selector */}
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 flex-nowrap sm:flex-wrap">
+              <MapPin className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+              <span className="text-zinc-400 text-[11px] uppercase tracking-wider font-mono shrink-0">
+                Lokalizacja:
+              </span>
+              <div className="flex gap-1 flex-nowrap sm:flex-wrap shrink-0">
+                {CITIES.map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => {
+                      setCustomLocation(null);
+                      setSelectedCityId(c.id);
+                    }}
+                    className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 ${
+                      !customLocation && selectedCityId === c.id
+                        ? "bg-white text-black font-semibold shadow-sm"
+                        : "text-zinc-400 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    {c.name.split(" ")[0]}
                   </button>
                 ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
 
-      {/* Control Toolbar */}
-      <div className="border-b border-white/10 bg-zinc-950/60 px-4 sm:px-6 py-2.5 backdrop-blur-md z-10 space-y-2.5">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-2.5 text-xs">
-          {/* Location Selector */}
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 flex-nowrap sm:flex-wrap">
-            <MapPin className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-            <span className="text-zinc-400 text-[11px] uppercase tracking-wider font-mono shrink-0">
-              Lokalizacja:
-            </span>
-            <div className="flex gap-1 flex-nowrap sm:flex-wrap shrink-0">
-              {CITIES.map((c) => (
                 <button
-                  key={c.id}
-                  onClick={() => {
-                    setCustomLocation(null);
-                    setSelectedCityId(c.id);
-                  }}
-                  className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 ${
-                    !customLocation && selectedCityId === c.id
-                      ? "bg-white text-black font-semibold shadow-sm"
-                      : "text-zinc-400 hover:text-white hover:bg-white/10"
+                  onClick={handleRequestGPS}
+                  title="Wykryj współrzędne z GPS w Twojej przeglądarce"
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer border shrink-0 ${
+                    customLocation
+                      ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                      : "border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10"
                   }`}
                 >
-                  {c.name.split(" ")[0]}
+                  <LocateFixed className="h-3 w-3" />
+                  <span>GPS</span>
                 </button>
-              ))}
+              </div>
+            </div>
 
+            {/* Time & Simulation Controls */}
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5 flex-nowrap sm:flex-wrap">
+              <Clock className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+
+              {/* Live Now Button */}
               <button
-                onClick={handleRequestGPS}
-                title="Wykryj współrzędne z GPS w Twojej przeglądarce"
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer border shrink-0 ${
-                  customLocation
-                    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
-                    : "border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10"
+                onClick={handleLiveNow}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 ${
+                  isLive && !isPlaying
+                    ? "bg-white text-black font-semibold shadow-sm"
+                    : "bg-white/5 text-zinc-400 hover:text-white border border-white/10"
                 }`}
               >
-                <LocateFixed className="h-3 w-3" />
-                <span>GPS</span>
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    isLive && !isPlaying ? "bg-emerald-500 animate-pulse" : "bg-zinc-600"
+                  }`}
+                />
+                Teraz
               </button>
+
+              {/* Play / Pause Time Simulation */}
+              <button
+                onClick={() => {
+                  setIsLive(false);
+                  setIsPlaying((p) => !p);
+                }}
+                title={isPlaying ? "Zatrzymaj upływ czasu (Spacja)" : "Uruchom animację obrotu nieba (Spacja)"}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer border shrink-0 ${
+                  isPlaying
+                    ? "bg-emerald-500 text-black font-bold border-emerald-400"
+                    : "bg-white/5 text-zinc-300 hover:text-white border-white/10"
+                }`}
+              >
+                {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                <span>{isPlaying ? "Pauza" : "Animuj niebo"}</span>
+              </button>
+
+              {/* Simulation Speed Dropdown */}
+              {isPlaying && (
+                <select
+                  value={playSpeed}
+                  onChange={(e) => setPlaySpeed(Number(e.target.value))}
+                  className="rounded-lg bg-zinc-900 border border-white/15 px-2 py-1 text-[11px] text-white focus:outline-none shrink-0"
+                >
+                  <option value={10}>10 min / s</option>
+                  <option value={60}>1h / s</option>
+                  <option value={180}>3h / s</option>
+                </select>
+              )}
+
+              {/* Step Hours */}
+              <div className="flex items-center border border-white/10 rounded-lg overflow-hidden bg-black/40 shrink-0">
+                <button
+                  onClick={() => handleShiftTime(-1)}
+                  title="Cofnij o 1 godzinę (klawisz [)"
+                  className="px-2 py-1 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors flex items-center cursor-pointer"
+                >
+                  <Minus className="h-3 w-3" />
+                  <span className="text-[10px] font-mono">1h</span>
+                </button>
+                <button
+                  onClick={() => handleShiftTime(1)}
+                  title="W przód o 1 godzinę (klawisz ])"
+                  className="px-2 py-1 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors flex items-center border-l border-white/10 cursor-pointer"
+                >
+                  <Plus className="h-3 w-3" />
+                  <span className="text-[10px] font-mono">1h</span>
+                </button>
+              </div>
+
+              {/* Quick Night Hours */}
+              <div className="hidden sm:flex gap-1 shrink-0">
+                <button
+                  onClick={() => handleSetHour(21)}
+                  className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-zinc-300 cursor-pointer"
+                >
+                  21:00
+                </button>
+                <button
+                  onClick={() => handleSetHour(0)}
+                  className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-zinc-300 cursor-pointer"
+                >
+                  00:00
+                </button>
+                <button
+                  onClick={() => handleSetHour(3)}
+                  className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-zinc-300 cursor-pointer"
+                >
+                  03:00
+                </button>
+              </div>
+
+              {/* Current Time Display */}
+              <span className="font-mono text-[11px] text-white font-semibold bg-white/10 px-2.5 py-1 rounded-lg border border-white/15 shrink-0">
+                {simulatedTime.toLocaleTimeString("pl-PL", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            </div>
+
+            {/* Layer & FOV Toggles */}
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5 flex-nowrap sm:flex-wrap">
+              {/* FOV Simulator Preset Dropdown */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <Crosshair className="h-3.5 w-3.5 text-zinc-400" />
+                <select
+                  value={fovPresetId}
+                  onChange={(e) => setFovPresetId(e.target.value)}
+                  className="rounded-lg bg-zinc-900 border border-white/15 px-2 py-1 text-[11px] text-zinc-200 focus:outline-none cursor-pointer"
+                  title="Symulator pola widzenia okularu / lornetki / szukacza (FOV)"
+                >
+                  {FOV_PRESETS.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Layer Buttons */}
+              <div className="flex items-center gap-1 flex-nowrap sm:flex-wrap shrink-0">
+                <button
+                  onClick={() => setShowMilkyWay((v) => !v)}
+                  className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
+                    showMilkyWay
+                      ? "bg-white text-black font-semibold border-white"
+                      : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                  }`}
+                  title="Włącz/wyłącz realistyczny pas Drogi Mlecznej"
+                >
+                  Droga Mleczna
+                </button>
+
+                <button
+                  onClick={() => setShowConstellations((v) => !v)}
+                  className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
+                    showConstellations
+                      ? "bg-white text-black font-semibold border-white"
+                      : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                  }`}
+                  title="Przełącz linie gwiazdozbiorów"
+                >
+                  Gwiazdozbiory
+                </button>
+
+                <button
+                  onClick={() => setShowLabels((v) => !v)}
+                  className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
+                    showLabels
+                      ? "bg-white text-black font-semibold border-white"
+                      : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                  }`}
+                  title="Przełącz etykiety i nazwy"
+                >
+                  Etykiety
+                </button>
+
+                <button
+                  onClick={() => setShowDso((v) => !v)}
+                  className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
+                    showDso
+                      ? "bg-white text-black font-semibold border-white"
+                      : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                  }`}
+                  title="Przełącz obiekty Messiera (DSO)"
+                >
+                  DSO
+                </button>
+
+                <button
+                  onClick={() => setShowGrid((v) => !v)}
+                  className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
+                    showGrid
+                      ? "bg-white text-black font-semibold border-white"
+                      : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                  }`}
+                  title="Przełącz siatkę wysokości i azymutu"
+                >
+                  Siatka Alt/Az
+                </button>
+
+                <button
+                  onClick={() => setShowHorizon((v) => !v)}
+                  className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
+                    showHorizon
+                      ? "bg-white text-black font-semibold border-white"
+                      : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
+                  }`}
+                  title="Przełącz linię horyzontu i kierunki kompasu"
+                >
+                  Horyzont
+                </button>
+
+                {/* Star Limiting Magnitude Filter */}
+                <select
+                  value={minMagLimit}
+                  onChange={(e) => setMinMagLimit(Number(e.target.value))}
+                  className="rounded-lg bg-zinc-900 border border-white/15 px-2 py-1 text-[11px] text-white focus:outline-none cursor-pointer shrink-0"
+                  title="Filtr zasięgu jasności gwiazd"
+                >
+                  <option value={6.0}>Do 6 mag (wszystkie)</option>
+                  <option value={3.5}>Do 3.5 mag (podmiejski)</option>
+                  <option value={2.0}>Do 2 mag (centrum miasta)</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          {/* Time & Simulation Controls */}
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5 flex-nowrap sm:flex-wrap">
-            <Clock className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-
-            {/* Live Now Button */}
-            <button
-              onClick={handleLiveNow}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 ${
-                isLive && !isPlaying
-                  ? "bg-white text-black font-semibold shadow-sm"
-                  : "bg-white/5 text-zinc-400 hover:text-white border border-white/10"
-              }`}
-            >
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${
-                  isLive && !isPlaying ? "bg-emerald-500 animate-pulse" : "bg-zinc-600"
-                }`}
-              />
-              Teraz
-            </button>
-
-            {/* Play / Pause Time Simulation */}
-            <button
-              onClick={() => {
-                setIsLive(false);
-                setIsPlaying((p) => !p);
-              }}
-              title={isPlaying ? "Zatrzymaj upływ czasu" : "Uruchom animację obrotu nieba"}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer border shrink-0 ${
-                isPlaying
-                  ? "bg-emerald-500 text-black font-bold border-emerald-400"
-                  : "bg-white/5 text-zinc-300 hover:text-white border-white/10"
-              }`}
-            >
-              {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-              <span>{isPlaying ? "Pauza" : "Animuj niebo"}</span>
-            </button>
-
-            {/* Simulation Speed Dropdown */}
-            {isPlaying && (
-              <select
-                value={playSpeed}
-                onChange={(e) => setPlaySpeed(Number(e.target.value))}
-                className="rounded-lg bg-zinc-900 border border-white/15 px-2 py-1 text-[11px] text-white focus:outline-none shrink-0"
-              >
-                <option value={10}>10 min / s</option>
-                <option value={60}>1h / s</option>
-                <option value={180}>3h / s</option>
-              </select>
-            )}
-
-            {/* Step Hours */}
-            <div className="flex items-center border border-white/10 rounded-lg overflow-hidden bg-black/40 shrink-0">
-              <button
-                onClick={() => handleShiftTime(-1)}
-                title="Cofnij o 1 godzinę"
-                className="px-2 py-1 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors flex items-center cursor-pointer"
-              >
-                <Minus className="h-3 w-3" />
-                <span className="text-[10px] font-mono">1h</span>
-              </button>
-              <button
-                onClick={() => handleShiftTime(1)}
-                title="W przód o 1 godzinę"
-                className="px-2 py-1 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors flex items-center border-l border-white/10 cursor-pointer"
-              >
-                <Plus className="h-3 w-3" />
-                <span className="text-[10px] font-mono">1h</span>
-              </button>
-            </div>
-
-            {/* Quick Night Hours */}
-            <div className="hidden sm:flex gap-1 shrink-0">
-              <button
-                onClick={() => handleSetHour(21)}
-                className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-zinc-300 cursor-pointer"
-              >
-                21:00
-              </button>
-              <button
-                onClick={() => handleSetHour(0)}
-                className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-zinc-300 cursor-pointer"
-              >
-                00:00
-              </button>
-              <button
-                onClick={() => handleSetHour(3)}
-                className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-zinc-300 cursor-pointer"
-              >
-                03:00
-              </button>
-            </div>
-
-            {/* Current Time Display */}
-            <span className="font-mono text-[11px] text-white font-semibold bg-white/10 px-2.5 py-1 rounded-lg border border-white/15 shrink-0">
-              {simulatedTime.toLocaleTimeString("pl-PL", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+          {/* 24h Time Slider Bar */}
+          <div className="max-w-7xl mx-auto flex items-center gap-3 pt-1 border-t border-white/5 text-xs">
+            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider shrink-0">
+              Pora doby:
             </span>
-          </div>
-
-          {/* Layer Toggles */}
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 flex-nowrap sm:flex-wrap">
-            <Layers className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-            <div className="flex items-center gap-1 flex-nowrap sm:flex-wrap shrink-0">
-              <button
-                onClick={() => setShowMilkyWay((v) => !v)}
-                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
-                  showMilkyWay
-                    ? "bg-white text-black font-semibold border-white"
-                    : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
-                }`}
-                title="Włącz/wyłącz realistyczny pas Drogi Mlecznej"
-              >
-                Droga Mleczna
-              </button>
-
-              <button
-                onClick={() => setShowConstellations((v) => !v)}
-                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
-                  showConstellations
-                    ? "bg-white text-black font-semibold border-white"
-                    : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
-                }`}
-                title="Przełącz linie gwiazdozbiorów"
-              >
-                Gwiazdozbiory
-              </button>
-
-              <button
-                onClick={() => setShowLabels((v) => !v)}
-                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
-                  showLabels
-                    ? "bg-white text-black font-semibold border-white"
-                    : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
-                }`}
-                title="Przełącz etykiety i nazwy"
-              >
-                Etykiety
-              </button>
-
-              <button
-                onClick={() => setShowDso((v) => !v)}
-                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
-                  showDso
-                    ? "bg-white text-black font-semibold border-white"
-                    : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
-                }`}
-                title="Przełącz obiekty Messiera (DSO)"
-              >
-                DSO
-              </button>
-
-              <button
-                onClick={() => setShowGrid((v) => !v)}
-                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
-                  showGrid
-                    ? "bg-white text-black font-semibold border-white"
-                    : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
-                }`}
-                title="Przełącz siatkę wysokości i azymutu"
-              >
-                Siatka Alt/Az
-              </button>
-
-              <button
-                onClick={() => setShowHorizon((v) => !v)}
-                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
-                  showHorizon
-                    ? "bg-white text-black font-semibold border-white"
-                    : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
-                }`}
-                title="Przełącz linię horyzontu i kierunki kompasu"
-              >
-                Horyzont
-              </button>
-
-              {/* Star Limiting Magnitude Filter */}
-              <select
-                value={minMagLimit}
-                onChange={(e) => setMinMagLimit(Number(e.target.value))}
-                className="rounded-lg bg-zinc-900 border border-white/15 px-2 py-1 text-[11px] text-white focus:outline-none cursor-pointer shrink-0"
-                title="Filtr zasięgu jasności gwiazd"
-              >
-                <option value={6.0}>Wszystkie gwiazdy (do 6m)</option>
-                <option value={3.5}>Zasięg podmiejski (do 3.5m)</option>
-                <option value={2.0}>Centrum miasta (do 2m)</option>
-              </select>
+            <input
+              type="range"
+              min={0}
+              max={1439}
+              step={5}
+              value={minutesFromMidnight}
+              onChange={handleSliderTimeChange}
+              className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white"
+            />
+            <div className="flex gap-2 text-[10px] font-mono text-zinc-400 shrink-0">
+              <span>Data: {simulatedTime.toISOString().slice(0, 10)}</span>
             </div>
           </div>
         </div>
+      )}
 
-        {/* 24h Time Slider Bar */}
-        <div className="max-w-7xl mx-auto flex items-center gap-3 pt-1 border-t border-white/5 text-xs">
-          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider shrink-0">
-            Pora doby:
-          </span>
-          <input
-            type="range"
-            min={0}
-            max={1439}
-            step={5}
-            value={minutesFromMidnight}
-            onChange={handleSliderTimeChange}
-            className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white"
-          />
-          <div className="flex gap-2 text-[10px] font-mono text-zinc-400 shrink-0">
-            <span>Dzień: {simulatedTime.toISOString().slice(0, 10)}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Interactive Planisphere Canvas */}
-      <div className="relative flex-1 w-full h-[calc(100vh-13rem)] min-h-[580px] bg-[#050508] overflow-hidden">
+      {/* Main Interactive Planisphere Canvas (Expanded to full screen in Observatory Mode) */}
+      <div className={`relative flex-1 w-full bg-[#050508] overflow-hidden ${isObservatoryMode ? "h-screen" : "h-[calc(100vh-13rem)] min-h-[580px]"}`}>
         <SkyMapPlanisphere2D
           stars={starsWithHorizontal}
           constellationLines={catalog.constellationLines}
@@ -724,13 +900,173 @@ export default function SkyMapPage() {
               : undefined
           }
           targetFocus={targetFocus}
+          fovPresetId={fovPresetId}
         />
 
-        {/* Selected Object Detail Card HUD */}
+        {/* Selected Object Detail Card HUD (With 24h Altitude vs Time Chart) */}
         <StarInfoCard
           selectedObject={selectedObject}
           onClose={() => setSelectedObject(null)}
+          lat={activeCity.lat}
+          lon={activeCity.lon}
+          simulatedTime={simulatedTime}
         />
+
+        {/* ======================================================== */}
+        {/* OBSERVATORY MODE FLOATING HUD CORNERS                     */}
+        {/* ======================================================== */}
+        {isObservatoryMode && (
+          <>
+            {/* Top Left Floating HUD (Brand & Location) */}
+            <div className="absolute left-4 top-4 z-20 flex flex-col gap-1.5 pointer-events-auto animate-in fade-in duration-300">
+              <div className="flex items-center gap-2 rounded-xl border border-white/15 bg-zinc-950/85 px-3 py-2 text-xs backdrop-blur-xl shadow-2xl">
+                <Sparkles className="h-4 w-4 text-white" />
+                <span className="font-bold tracking-wider text-white">GALACTI OBSERWATORIUM</span>
+                <span className="text-zinc-600">|</span>
+                <span className="text-[11px] font-mono text-zinc-300">{activeCity.name}</span>
+                {fovPresetId !== "none" && (
+                  <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-mono text-zinc-200 border border-white/15">
+                    FOV: {FOV_PRESETS.find((p) => p.id === fovPresetId)?.name.split(" ")[0]}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Top Right Floating HUD (Controls & Fullscreen) */}
+            <div className="absolute right-4 top-4 z-20 flex items-center gap-2 pointer-events-auto animate-in fade-in duration-300">
+              {/* Floating Clock & Play/Pause */}
+              <div className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-zinc-950/85 px-2.5 py-1.5 text-xs backdrop-blur-xl shadow-2xl">
+                <span className="font-mono text-xs font-bold text-white">
+                  {simulatedTime.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}
+                </span>
+                <button
+                  onClick={() => {
+                    setIsLive(false);
+                    setIsPlaying((p) => !p);
+                  }}
+                  title={isPlaying ? "Wstrzymaj (Spacja)" : "Animuj (Spacja)"}
+                  className="p-1 rounded-md bg-white/10 text-white hover:bg-white/20 transition-colors"
+                >
+                  {isPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                </button>
+                <button
+                  onClick={() => handleShiftTime(-1)}
+                  title="Cofnij 1h ([)"
+                  className="px-1.5 py-0.5 rounded text-[10px] font-mono text-zinc-300 hover:bg-white/10"
+                >
+                  -1h
+                </button>
+                <button
+                  onClick={() => handleShiftTime(1)}
+                  title="Przesuń 1h (])"
+                  className="px-1.5 py-0.5 rounded text-[10px] font-mono text-zinc-300 hover:bg-white/10"
+                >
+                  +1h
+                </button>
+              </div>
+
+              {/* FOV Dropdown */}
+              <select
+                value={fovPresetId}
+                onChange={(e) => setFovPresetId(e.target.value)}
+                className="rounded-xl border border-white/15 bg-zinc-950/85 px-2 py-1.5 text-xs text-white backdrop-blur-xl focus:outline-none cursor-pointer"
+                title="Symulator pola widzenia (FOV)"
+              >
+                {FOV_PRESETS.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+
+              {/* Focus on object button */}
+              {selectedObject && (
+                <button
+                  onClick={handleFocusSelected}
+                  title="Wycentruj na zaznaczonym obiekcie (klawisz F)"
+                  className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-zinc-950/85 text-zinc-200 hover:bg-white/15 hover:text-white transition-colors cursor-pointer backdrop-blur-xl"
+                >
+                  <Target className="h-4 w-4" />
+                </button>
+              )}
+
+              {/* Shortcuts modal button */}
+              <button
+                onClick={() => setIsShortcutsModalOpen(true)}
+                title="Ściąga skrótów klawiszowych (klawisz ?)"
+                className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-zinc-950/85 text-zinc-200 hover:bg-white/15 hover:text-white transition-colors cursor-pointer backdrop-blur-xl"
+              >
+                <Keyboard className="h-4 w-4" />
+              </button>
+
+              {/* Toggle Fullscreen button */}
+              <button
+                onClick={toggleFullscreen}
+                title={isFullscreen ? "Opuść pełny ekran" : "Włącz pełny ekran"}
+                className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-zinc-950/85 text-zinc-200 hover:bg-white/15 hover:text-white transition-colors cursor-pointer backdrop-blur-xl"
+              >
+                {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+              </button>
+
+              {/* Exit Observatory Mode */}
+              <button
+                onClick={() => {
+                  setIsObservatoryMode(false);
+                  if (document.fullscreenElement) {
+                    document.exitFullscreen().catch(() => {});
+                  }
+                }}
+                className="rounded-xl border border-white/15 bg-white/10 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-white/20 transition-colors backdrop-blur-xl cursor-pointer"
+              >
+                Przywróć pasek
+              </button>
+            </div>
+
+            {/* Bottom Right Floating Layer Toggles in Observatory */}
+            <div className="absolute right-4 bottom-4 z-20 flex items-center gap-1.5 rounded-2xl border border-white/15 bg-zinc-950/85 p-1.5 backdrop-blur-xl shadow-2xl pointer-events-auto">
+              <button
+                onClick={() => setShowConstellations((v) => !v)}
+                className={`px-2 py-1 rounded-lg text-[10px] font-medium transition-colors cursor-pointer ${
+                  showConstellations ? "bg-white text-black font-semibold" : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                Linie
+              </button>
+              <button
+                onClick={() => setShowLabels((v) => !v)}
+                className={`px-2 py-1 rounded-lg text-[10px] font-medium transition-colors cursor-pointer ${
+                  showLabels ? "bg-white text-black font-semibold" : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                Etykiety
+              </button>
+              <button
+                onClick={() => setShowDso((v) => !v)}
+                className={`px-2 py-1 rounded-lg text-[10px] font-medium transition-colors cursor-pointer ${
+                  showDso ? "bg-white text-black font-semibold" : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                DSO
+              </button>
+              <button
+                onClick={() => setShowGrid((v) => !v)}
+                className={`px-2 py-1 rounded-lg text-[10px] font-medium transition-colors cursor-pointer ${
+                  showGrid ? "bg-white text-black font-semibold" : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                Siatka
+              </button>
+              <button
+                onClick={() => setShowMilkyWay((v) => !v)}
+                className={`px-2 py-1 rounded-lg text-[10px] font-medium transition-colors cursor-pointer ${
+                  showMilkyWay ? "bg-white text-black font-semibold" : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                Droga Mleczna
+              </button>
+            </div>
+          </>
+        )}
 
         {/* Curated Highlights Quick Selector (Bottom Left Pills) */}
         <div
@@ -742,7 +1078,7 @@ export default function SkyMapPage() {
           <div className="pointer-events-auto flex items-center gap-2 rounded-xl border border-white/10 bg-zinc-950/85 px-3 py-2 text-xs backdrop-blur-md text-zinc-300">
             <Info className="h-3.5 w-3.5 text-zinc-400" />
             <span className="hidden sm:inline">
-              Zenit w centrum, brzeg = linia horyzontu (0°). Kółko myszy/gest = zoom, przeciągnij = przesuwanie.
+              Zenit w centrum (0°–90°). Kółko myszy = zoom, przeciągnij = pan, klawisz <kbd className="px-1 py-0.5 rounded border border-white/20 bg-zinc-800 text-[10px] font-mono text-white">?</kbd> pomoc.
             </span>
             <span className="sm:hidden">Dotknij obiektu, aby zbadać.</span>
           </div>
@@ -787,6 +1123,12 @@ export default function SkyMapPage() {
           </div>
         </div>
       </div>
+
+      {/* Keyboard Shortcuts Help Modal */}
+      <KeyboardShortcutsModal
+        isOpen={isShortcutsModalOpen}
+        onClose={() => setIsShortcutsModalOpen(false)}
+      />
     </div>
   );
 }

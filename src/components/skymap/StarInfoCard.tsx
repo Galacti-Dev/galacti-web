@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { X, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { X, Sparkles, ChevronDown, ChevronUp, TrendingUp, Info } from "lucide-react";
 import { StarData, DeepSkyObject } from "@/lib/types";
 import { CONSTELLATION_NAMES_PL } from "@/lib/astronomyMath";
+import { AltitudeTimeChart } from "./AltitudeTimeChart";
 
 const CONSTELLATION_DESCRIPTIONS: Record<string, string> = {
   UMa: "Wielka Niedźwiedzica – jeden z najbardziej znanych gwiazdozbiorów nieba północnego. Siedem najjaśniejszych gwiazd tworzy charakterystyczny asteryzm Wielkiego Wozu, służący do odnajdywania Gwiazdy Polarnej.",
@@ -26,10 +27,20 @@ interface SelectedObjectInfoProps {
     data: StarData | DeepSkyObject | { con: string; stars: StarData[] };
   } | null;
   onClose: () => void;
+  lat?: number;
+  lon?: number;
+  simulatedTime?: Date;
 }
 
-export function StarInfoCard({ selectedObject, onClose }: SelectedObjectInfoProps) {
+export function StarInfoCard({
+  selectedObject,
+  onClose,
+  lat = 52.23,
+  lon = 21.01,
+  simulatedTime = new Date(),
+}: SelectedObjectInfoProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<"info" | "altitude">("info");
 
   if (!selectedObject) return null;
 
@@ -40,7 +51,7 @@ export function StarInfoCard({ selectedObject, onClose }: SelectedObjectInfoProp
     const conPl = CONSTELLATION_NAMES_PL[star.con] || star.con;
 
     return (
-      <div className="absolute inset-x-2 bottom-2 sm:inset-x-auto sm:right-4 sm:top-20 sm:bottom-auto sm:w-88 max-w-[calc(100vw-1rem)] rounded-2xl border border-white/20 bg-zinc-950/95 p-3.5 sm:p-4.5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-3 max-h-[80vh] overflow-y-auto">
+      <div className="absolute inset-x-2 bottom-2 sm:inset-x-auto sm:right-4 sm:top-20 sm:bottom-auto sm:w-96 lg:w-[420px] max-w-[calc(100vw-1rem)] rounded-2xl border border-white/20 bg-zinc-950/95 p-3.5 sm:p-4.5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-3 max-h-[85vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-white/10 pb-2.5">
           <div className="flex-1 pr-2">
@@ -73,53 +84,93 @@ export function StarInfoCard({ selectedObject, onClose }: SelectedObjectInfoProp
           </div>
         </div>
 
-        {/* Essential Quick Metrics Bar */}
-        <div className="grid grid-cols-2 gap-2 my-2.5 text-xs">
-          <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
-            <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Jasność (V)</span>
-            <span className="font-bold text-white text-xs sm:text-sm">{star.mag.toFixed(2)} mag</span>
-          </div>
-
-          <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
-            <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Wysokość (Alt)</span>
-            <span className="font-semibold text-emerald-400 text-xs sm:text-sm">
-              {star.horizontal ? `${star.horizontal.alt.toFixed(1)}°` : "—"}
-            </span>
-          </div>
+        {/* View Mode Tabs (Desktop / Mobile) */}
+        <div className="flex items-center rounded-lg bg-zinc-900/80 p-0.5 border border-white/10 my-2.5 text-xs">
+          <button
+            onClick={() => setActiveTab("info")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1 px-2 rounded-md font-medium transition-colors cursor-pointer ${
+              activeTab === "info"
+                ? "bg-white text-black font-semibold shadow-sm"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            <Info className="h-3.5 w-3.5" />
+            <span>Szczegóły</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("altitude")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1 px-2 rounded-md font-medium transition-colors cursor-pointer ${
+              activeTab === "altitude"
+                ? "bg-white text-black font-semibold shadow-sm"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            <TrendingUp className="h-3.5 w-3.5" />
+            <span>Wykres 24h</span>
+          </button>
         </div>
 
-        {/* Collapsible / Expandable Section on Mobile */}
-        <div className={`${isExpanded ? "block" : "hidden sm:block"} space-y-2`}>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
-              <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Typ widmowy</span>
-              <span className="font-bold text-white">{star.spec}</span>
+        {activeTab === "info" ? (
+          <>
+            {/* Essential Quick Metrics Bar */}
+            <div className="grid grid-cols-2 gap-2 mb-2 text-xs">
+              <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
+                <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Jasność (V)</span>
+                <span className="font-bold text-white text-xs sm:text-sm">{star.mag.toFixed(2)} mag</span>
+              </div>
+
+              <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
+                <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Wysokość (Alt)</span>
+                <span className="font-semibold text-emerald-400 text-xs sm:text-sm">
+                  {star.horizontal ? `${star.horizontal.alt.toFixed(1)}°` : "—"}
+                </span>
+              </div>
             </div>
 
-            <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
-              <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Azymut (Az)</span>
-              <span className="font-semibold text-white">
-                {star.horizontal ? `${star.horizontal.az.toFixed(1)}°` : "—"}
-              </span>
-            </div>
-          </div>
+            {/* Collapsible / Expandable Section on Mobile */}
+            <div className={`${isExpanded ? "block" : "hidden sm:block"} space-y-2`}>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Typ widmowy</span>
+                  <span className="font-bold text-white">{star.spec}</span>
+                </div>
 
-          {/* Coordinates */}
-          <div className="rounded-xl border border-white/5 bg-zinc-900/60 p-2 sm:p-2.5 text-[10px] sm:text-[11px] text-zinc-300 space-y-1">
-            <div className="flex justify-between">
-              <span className="text-zinc-400">Rektascensja (RA):</span>
-              <span className="font-mono">{star.ra.toFixed(3)} h</span>
+                <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Azymut (Az)</span>
+                  <span className="font-semibold text-white">
+                    {star.horizontal ? `${star.horizontal.az.toFixed(1)}°` : "—"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Coordinates */}
+              <div className="rounded-xl border border-white/5 bg-zinc-900/60 p-2 sm:p-2.5 text-[10px] sm:text-[11px] text-zinc-300 space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-zinc-400">Rektascensja (RA):</span>
+                  <span className="font-mono">{star.ra.toFixed(3)} h</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-400">Deklinacja (Dec):</span>
+                  <span className="font-mono">{star.dec > 0 ? `+${star.dec.toFixed(2)}°` : `${star.dec.toFixed(2)}°`}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-400">Wskaźnik barwy (B-V):</span>
+                  <span className="font-mono">{star.bv.toFixed(2)}</span>
+                </div>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span className="text-zinc-400">Deklinacja (Dec):</span>
-              <span className="font-mono">{star.dec > 0 ? `+${star.dec.toFixed(2)}°` : `${star.dec.toFixed(2)}°`}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-zinc-400">Wskaźnik barwy (B-V):</span>
-              <span className="font-mono">{star.bv.toFixed(2)}</span>
-            </div>
+          </>
+        ) : (
+          <div className="space-y-2">
+            <AltitudeTimeChart
+              coord={{ ra: star.ra, dec: star.dec }}
+              lat={lat}
+              lon={lon}
+              simulatedTime={simulatedTime}
+              objectName={star.name}
+            />
           </div>
-        </div>
+        )}
       </div>
     );
   }
@@ -129,7 +180,7 @@ export function StarInfoCard({ selectedObject, onClose }: SelectedObjectInfoProp
     const conPl = CONSTELLATION_NAMES_PL[dso.con] || dso.con;
 
     return (
-      <div className="absolute inset-x-2 bottom-2 sm:inset-x-auto sm:right-4 sm:top-20 sm:bottom-auto sm:w-88 max-w-[calc(100vw-1rem)] rounded-2xl border border-white/20 bg-zinc-950/95 p-3.5 sm:p-4.5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-3 max-h-[80vh] overflow-y-auto">
+      <div className="absolute inset-x-2 bottom-2 sm:inset-x-auto sm:right-4 sm:top-20 sm:bottom-auto sm:w-96 lg:w-[420px] max-w-[calc(100vw-1rem)] rounded-2xl border border-white/20 bg-zinc-950/95 p-3.5 sm:p-4.5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-3 max-h-[85vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-white/10 pb-2.5">
           <div className="flex-1 pr-2">
@@ -160,46 +211,86 @@ export function StarInfoCard({ selectedObject, onClose }: SelectedObjectInfoProp
           </div>
         </div>
 
-        {/* Essential Quick Metrics Bar */}
-        <div className="grid grid-cols-2 gap-2 my-2.5 text-xs">
-          <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
-            <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Jasność (mag)</span>
-            <span className="font-bold text-white text-xs sm:text-sm">{dso.mag.toFixed(1)} mag</span>
-          </div>
-
-          <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
-            <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Pozycja (Alt/Az)</span>
-            <span className="font-semibold text-emerald-400 text-xs sm:text-sm">
-              {dso.horizontal
-                ? `${dso.horizontal.alt.toFixed(1)}° / ${dso.horizontal.az.toFixed(0)}°`
-                : "—"}
-            </span>
-          </div>
+        {/* View Mode Tabs (Desktop / Mobile) */}
+        <div className="flex items-center rounded-lg bg-zinc-900/80 p-0.5 border border-white/10 my-2.5 text-xs">
+          <button
+            onClick={() => setActiveTab("info")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1 px-2 rounded-md font-medium transition-colors cursor-pointer ${
+              activeTab === "info"
+                ? "bg-white text-black font-semibold shadow-sm"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            <Info className="h-3.5 w-3.5" />
+            <span>Szczegóły</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("altitude")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1 px-2 rounded-md font-medium transition-colors cursor-pointer ${
+              activeTab === "altitude"
+                ? "bg-white text-black font-semibold shadow-sm"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            <TrendingUp className="h-3.5 w-3.5" />
+            <span>Wykres 24h</span>
+          </button>
         </div>
 
-        {/* Collapsible / Expandable Details */}
-        <div className={`${isExpanded ? "block" : "hidden sm:block"} space-y-2`}>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
-              <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Dystans</span>
-              <span className="font-bold text-white text-[11px] sm:text-xs">
-                {dso.distanceLy >= 1000000
-                  ? `${(dso.distanceLy / 1000000).toFixed(1)} mln ly`
-                  : `${dso.distanceLy.toLocaleString("pl-PL")} ly`}
-              </span>
+        {activeTab === "info" ? (
+          <>
+            {/* Essential Quick Metrics Bar */}
+            <div className="grid grid-cols-2 gap-2 mb-2 text-xs">
+              <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
+                <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Jasność (mag)</span>
+                <span className="font-bold text-white text-xs sm:text-sm">{dso.mag.toFixed(1)} mag</span>
+              </div>
+
+              <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
+                <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Pozycja (Alt/Az)</span>
+                <span className="font-semibold text-emerald-400 text-xs sm:text-sm">
+                  {dso.horizontal
+                    ? `${dso.horizontal.alt.toFixed(1)}° / ${dso.horizontal.az.toFixed(0)}°`
+                    : "—"}
+                </span>
+              </div>
             </div>
 
-            <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
-              <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Sprzęt</span>
-              <span className="font-semibold text-zinc-200 truncate block text-[11px] sm:text-xs">{dso.equipment}</span>
-            </div>
-          </div>
+            {/* Collapsible / Expandable Details */}
+            <div className={`${isExpanded ? "block" : "hidden sm:block"} space-y-2`}>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Dystans</span>
+                  <span className="font-bold text-white text-[11px] sm:text-xs">
+                    {dso.distanceLy >= 1000000
+                      ? `${(dso.distanceLy / 1000000).toFixed(1)} mln ly`
+                      : `${dso.distanceLy.toLocaleString("pl-PL")} ly`}
+                  </span>
+                </div>
 
-          {/* Physical Description */}
-          <div className="rounded-xl border border-white/5 bg-zinc-900/60 p-2 sm:p-2.5 text-[11px] sm:text-xs text-zinc-300 leading-relaxed">
-            {dso.descriptionPl}
+                <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Sprzęt</span>
+                  <span className="font-semibold text-zinc-200 truncate block text-[11px] sm:text-xs">{dso.equipment}</span>
+                </div>
+              </div>
+
+              {/* Physical Description */}
+              <div className="rounded-xl border border-white/5 bg-zinc-900/60 p-2 sm:p-2.5 text-[11px] sm:text-xs text-zinc-300 leading-relaxed">
+                {dso.descriptionPl}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="space-y-2">
+            <AltitudeTimeChart
+              coord={{ ra: dso.ra, dec: dso.dec }}
+              lat={lat}
+              lon={lon}
+              simulatedTime={simulatedTime}
+              objectName={dso.id}
+            />
           </div>
-        </div>
+        )}
       </div>
     );
   }
@@ -211,8 +302,12 @@ export function StarInfoCard({ selectedObject, onClose }: SelectedObjectInfoProp
     const visibleCount = stars.filter((s) => s.horizontal && s.horizontal.alt > 0).length;
     const brightestStar = [...stars].sort((a, b) => a.mag - b.mag)[0];
 
+    // Compute average RA/Dec for constellation
+    const avgRa = stars.reduce((sum, s) => sum + s.ra, 0) / (stars.length || 1);
+    const avgDec = stars.reduce((sum, s) => sum + s.dec, 0) / (stars.length || 1);
+
     return (
-      <div className="absolute inset-x-2 bottom-2 sm:inset-x-auto sm:right-4 sm:top-20 sm:bottom-auto sm:w-88 max-w-[calc(100vw-1rem)] rounded-2xl border border-white/20 bg-zinc-950/95 p-3.5 sm:p-4.5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-3 max-h-[80vh] overflow-y-auto">
+      <div className="absolute inset-x-2 bottom-2 sm:inset-x-auto sm:right-4 sm:top-20 sm:bottom-auto sm:w-96 lg:w-[420px] max-w-[calc(100vw-1rem)] rounded-2xl border border-white/20 bg-zinc-950/95 p-3.5 sm:p-4.5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-3 max-h-[85vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between border-b border-white/10 pb-2.5">
           <div className="flex-1 pr-2">
@@ -244,37 +339,77 @@ export function StarInfoCard({ selectedObject, onClose }: SelectedObjectInfoProp
           </div>
         </div>
 
-        {/* Essential Quick Metrics Bar */}
-        <div className="grid grid-cols-2 gap-2 my-2.5 text-xs">
-          <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
-            <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">W katalogu</span>
-            <span className="font-bold text-white text-xs sm:text-sm">{stars.length} gwiazd</span>
-          </div>
-
-          <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
-            <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Widoczne teraz</span>
-            <span className="font-bold text-emerald-400 text-xs sm:text-sm">
-              {visibleCount} / {stars.length}
-            </span>
-          </div>
+        {/* View Mode Tabs */}
+        <div className="flex items-center rounded-lg bg-zinc-900/80 p-0.5 border border-white/10 my-2.5 text-xs">
+          <button
+            onClick={() => setActiveTab("info")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1 px-2 rounded-md font-medium transition-colors cursor-pointer ${
+              activeTab === "info"
+                ? "bg-white text-black font-semibold shadow-sm"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            <Info className="h-3.5 w-3.5" />
+            <span>Szczegóły</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("altitude")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1 px-2 rounded-md font-medium transition-colors cursor-pointer ${
+              activeTab === "altitude"
+                ? "bg-white text-black font-semibold shadow-sm"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            <TrendingUp className="h-3.5 w-3.5" />
+            <span>Wykres 24h</span>
+          </button>
         </div>
 
-        {/* Collapsible Details */}
-        <div className={`${isExpanded ? "block" : "hidden sm:block"} space-y-2`}>
-          {brightestStar && (
-            <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
-              <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Najjaśniejsza gwiazda</span>
-              <span className="font-semibold text-white text-xs">
-                {brightestStar.name} ({brightestStar.bayer}) – {brightestStar.mag.toFixed(2)} mag
-              </span>
+        {activeTab === "info" ? (
+          <>
+            {/* Essential Quick Metrics Bar */}
+            <div className="grid grid-cols-2 gap-2 mb-2 text-xs">
+              <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
+                <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">W katalogu</span>
+                <span className="font-bold text-white text-xs sm:text-sm">{stars.length} gwiazd</span>
+              </div>
+
+              <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
+                <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Widoczne teraz</span>
+                <span className="font-bold text-emerald-400 text-xs sm:text-sm">
+                  {visibleCount} / {stars.length}
+                </span>
+              </div>
             </div>
-          )}
 
-          {/* Description */}
-          <div className="rounded-xl border border-white/5 bg-zinc-900/60 p-2 sm:p-2.5 text-[11px] sm:text-xs text-zinc-300 leading-relaxed">
-            {desc}
+            {/* Collapsible Details */}
+            <div className={`${isExpanded ? "block" : "hidden sm:block"} space-y-2`}>
+              {brightestStar && (
+                <div className="rounded-xl border border-white/5 bg-white/5 p-2 sm:p-2.5">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 block uppercase tracking-wider font-mono">Najjaśniejsza gwiazda</span>
+                  <span className="font-semibold text-white text-xs">
+                    {brightestStar.name} ({brightestStar.bayer}) – {brightestStar.mag.toFixed(2)} mag
+                  </span>
+                </div>
+              )}
+
+              {/* Description */}
+              <div className="rounded-xl border border-white/5 bg-zinc-900/60 p-2 sm:p-2.5 text-[11px] sm:text-xs text-zinc-300 leading-relaxed">
+                {desc}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="space-y-2">
+            <AltitudeTimeChart
+              coord={{ ra: avgRa, dec: avgDec }}
+              lat={lat}
+              lon={lon}
+              simulatedTime={simulatedTime}
+              objectName={conPl}
+            />
           </div>
-        </div>
+        )}
       </div>
     );
   }

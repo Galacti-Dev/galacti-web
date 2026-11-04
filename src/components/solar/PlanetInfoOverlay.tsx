@@ -11,6 +11,7 @@ import {
   Sparkles,
   ArrowUpRight,
   Disc,
+  Scale,
 } from "lucide-react";
 import { CelestialBodyData } from "@/lib/types";
 import planetsRaw from "@/data/planets.json";
@@ -25,6 +26,7 @@ interface PlanetInfoOverlayProps {
   planet: CelestialBodyData | null;
   onClose: () => void;
   onSelectPlanet?: (planet: CelestialBodyData) => void;
+  onOpenScaleComparator?: () => void;
 }
 
 function formatType(type: string): string {
@@ -50,6 +52,7 @@ export function PlanetInfoOverlay({
   planet,
   onClose,
   onSelectPlanet,
+  onOpenScaleComparator,
 }: PlanetInfoOverlayProps) {
   const moons = useMemo(() => {
     if (!planet) return [];
@@ -184,6 +187,19 @@ export function PlanetInfoOverlay({
           </div>
         </div>
       </div>
+
+      {/* Scale comparator quick action */}
+      {onOpenScaleComparator && (
+        <div className="mt-3">
+          <button
+            onClick={onOpenScaleComparator}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-3.5 py-2.5 text-xs font-semibold text-white hover:bg-white/20 transition-all shadow-md active:scale-98"
+          >
+            <Scale className="h-4 w-4" />
+            <span>Porównaj skalę z Ziemią / Słońcem</span>
+          </button>
+        </div>
+      )}
 
       {/* Moons Sub-System Quick Selector for Parent Bodies */}
       {moons.length > 0 && (

@@ -6,7 +6,7 @@ import {
   ZoomOut,
   RotateCcw,
 } from "lucide-react";
-import { StarData, DeepSkyObject, ConstellationLine } from "@/lib/types";
+import { StarData, DeepSkyObject, ConstellationLine, FOV_PRESETS } from "@/lib/types";
 import {
   horizontalToPlanisphere2D,
   equatorialToHorizontal,
@@ -33,6 +33,7 @@ interface SkyMapPlanisphere2DProps {
     data: StarData | DeepSkyObject | { con: string; stars: StarData[] };
   }) => void;
   targetFocus?: { x: number; y: number } | null;
+  fovPresetId?: string;
 }
 
 const CX = 300;
@@ -74,8 +75,15 @@ export function SkyMapPlanisphere2D({
   selectedId,
   onSelectObject,
   targetFocus,
+  fovPresetId,
 }: SkyMapPlanisphere2DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // FOV preset resolution
+  const activeFovPreset = useMemo(() => {
+    if (!fovPresetId || fovPresetId === "none") return null;
+    return FOV_PRESETS.find((p) => p.id === fovPresetId) || null;
+  }, [fovPresetId]);
 
   // Zoom & Pan transformation state
   const [zoom, setZoom] = useState(1);
@@ -987,6 +995,112 @@ export function SkyMapPlanisphere2D({
                 })}
             </g>
           </g>
+
+          {/* Telescope & Binocular FOV Simulator Reticle Layer */}
+          {activeFovPreset && (
+            <g className="pointer-events-none transition-all duration-200">
+              {(() => {
+                const degToPx = RADIUS / 90; // ~2.778 px per degree
+                const rFov = (activeFovPreset.fovDeg / 2) * degToPx;
+                
+                // Determine center of FOV
+                let fx = CX;
+                let fy = CY;
+                if (selectedId) {
+                  const s = projectedStars.find((item) => item.star.id === selectedId);
+                  if (s && s.visible) {
+                    fx = s.x;
+                    fy = s.y;
+                  } else {
+                    const d = projectedDso.find((item) => item.dso.id === selectedId);
+                    if (d && d.visible) {
+                      fx = d.x;
+                      fy = d.y;
+                    }
+                  }
+                }
+
+                if (activeFovPreset.reticle === "telrad") {
+                  // Telrad: 3 concentric circles 0.5°, 2.0°, 4.0°
+                  const r1 = (0.5 / 2) * degToPx;
+                  const r2 = (2.0 / 2) * degToPx;
+                  const r3 = (4.0 / 2) * degToPx;
+
+                  return (
+                    <g>
+                      <circle cx={fx} cy={fy} r={r3} fill="rgba(255, 255, 255, 0.04)" />
+                      <circle cx={fx} cy={fy} r={r1} fill="none" stroke="#ffffff" strokeWidth="1" strokeDasharray="3 2" opacity="0.9" />
+                      <circle cx={fx} cy={fy} r={r2} fill="none" stroke="#ffffff" strokeWidth="1.2" strokeDasharray="4 3" opacity="0.85" />
+                      <circle cx={fx} cy={fy} r={r3} fill="none" stroke="#ffffff" strokeWidth="1.5" strokeDasharray="5 3" opacity="0.8" />
+                      {/* Directional alignment ticks */}
+                      <line x1={fx} y1={fy - r3 - 5} x2={fx} y2={fy - r2} stroke="#ffffff" strokeWidth="1.2" opacity="0.75" />
+                      <line x1={fx} y1={fy + r2} x2={fx} y2={fy + r3 + 5} stroke="#ffffff" strokeWidth="1.2" opacity="0.75" />
+                      <line x1={fx - r3 - 5} y1={fy} x2={fx - r2} y2={fy} stroke="#ffffff" strokeWidth="1.2" opacity="0.75" />
+                      <line x1={fx + r2} y1={fy} x2={fx + r3 + 5} y2={fy} stroke="#ffffff" strokeWidth="1.2" opacity="0.75" />
+                      {/* Badge text */}
+                      <text
+                        x={fx}
+                        y={fy + r3 + 13}
+                        textAnchor="middle"
+                        fill="#ffffff"
+                        fontSize="8.5"
+                        fontFamily="monospace"
+                        fontWeight="bold"
+                        className="select-none drop-shadow"
+                      >
+                        TELRAD (0.5° / 2° / 4°)
+                      </text>
+                    </g>
+                  );
+                }
+
+                return (
+                  <g>
+                    {/* Main FOV Circle */}
+                    <circle
+                      cx={fx}
+                      cy={fy}
+                      r={Math.max(4, rFov)}
+                      fill="rgba(255, 255, 255, 0.03)"
+                      stroke="#ffffff"
+                      strokeWidth="1.4"
+                      strokeDasharray={activeFovPreset.reticle === "crosshair" ? "none" : "5 3"}
+                      opacity="0.85"
+                    />
+
+                    {/* Reticle crosshair */}
+                    {activeFovPreset.reticle === "crosshair" ? (
+                      <g stroke="#ffffff" strokeWidth="0.9" opacity="0.7" strokeDasharray="2 2">
+                        <line x1={fx - rFov} y1={fy} x2={fx - 4} y2={fy} />
+                        <line x1={fx + 4} y1={fy} x2={fx + rFov} y2={fy} />
+                        <line x1={fx} y1={fy - rFov} x2={fx} y2={fy - 4} />
+                        <line x1={fx} y1={fy + 4} x2={fx} y2={fy + rFov} />
+                      </g>
+                    ) : (
+                      <g stroke="#ffffff" strokeWidth="1" opacity="0.6">
+                        <line x1={fx - 3} y1={fy} x2={fx + 3} y2={fy} />
+                        <line x1={fx} y1={fy - 3} x2={fx} y2={fy + 3} />
+                      </g>
+                    )}
+
+                    {/* FOV Label */}
+                    <text
+                      x={fx}
+                      y={fy + rFov + 12}
+                      textAnchor="middle"
+                      fill="#ffffff"
+                      fontSize="8.5"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                      className="select-none drop-shadow"
+                    >
+                      FOV: {activeFovPreset.fovDeg}° • {activeFovPreset.name}
+                    </text>
+                  </g>
+                );
+              })()}
+            </g>
+          )}
 
           {/* Compass Horizon Ring & Tick Marks */}
           {showHorizon && (

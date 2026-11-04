@@ -42,6 +42,7 @@ interface CameraControllerProps {
   resetTrigger?: number;
   meshMapRef: React.RefObject<Map<string, THREE.Object3D>>;
   controlsRef: React.RefObject<React.ComponentRef<typeof OrbitControls> | null>;
+  isCinematicMode?: boolean;
 }
 
 function CameraController({
@@ -49,9 +50,11 @@ function CameraController({
   resetTrigger,
   meshMapRef,
   controlsRef,
+  isCinematicMode = false,
 }: CameraControllerProps) {
   const { camera } = useThree();
   const isFlyingRef = useRef(false);
+  const cinematicAngleRef = useRef(0);
   const prevPlanetIdRef = useRef<string | null>(null);
   const prevResetTriggerRef = useRef<number | undefined>(resetTrigger);
 
@@ -129,6 +132,63 @@ function CameraController({
     const controls = controlsRef.current;
     const dt = Math.min(delta, 0.1);
 
+    if (isCinematicMode) {
+      cinematicAngleRef.current += dt * 0.14;
+      const angle = cinematicAngleRef.current;
+
+      if (selectedPlanet) {
+        const mesh = meshMapRef.current.get(selectedPlanet.id);
+        if (mesh) {
+          mesh.getWorldPosition(vPlanetPos);
+          vPrevPlanetPos.copy(vPlanetPos);
+
+          const isMoon = selectedPlanet.type === "moon";
+          const isDwarf = selectedPlanet.type === "dwarf_planet";
+          const orbitDist = Math.max(
+            selectedPlanet.scaledRadius *
+              (selectedPlanet.id === "saturn"
+                ? 5.5
+                : selectedPlanet.id === "sun"
+                ? 3.4
+                : isMoon
+                ? 3.6
+                : isDwarf
+                ? 4.0
+                : 4.2),
+            isMoon ? 1.0 : isDwarf ? 1.6 : 3.8
+          );
+
+          const camX = vPlanetPos.x + Math.sin(angle) * orbitDist;
+          const camZ = vPlanetPos.z + Math.cos(angle) * orbitDist;
+          const camY =
+            vPlanetPos.y +
+            Math.sin(angle * 0.5) * (orbitDist * 0.22) +
+            orbitDist * 0.32;
+
+          vCamDesired.set(camX, camY, camZ);
+          camera.position.lerp(vCamDesired, 1 - Math.exp(-3.5 * dt));
+          if (controls) {
+            controls.target.lerp(vPlanetPos, 1 - Math.exp(-4 * dt));
+            controls.update();
+          }
+        }
+      } else {
+        // Panoramic cinematic overview of entire solar system
+        const overviewDist = 95;
+        const camX = Math.sin(angle * 0.2) * overviewDist;
+        const camZ = Math.cos(angle * 0.2) * overviewDist;
+        const camY = 38 + Math.sin(angle * 0.8) * 12;
+
+        vCamDesired.set(camX, camY, camZ);
+        camera.position.lerp(vCamDesired, 1 - Math.exp(-2.5 * dt));
+        if (controls) {
+          controls.target.lerp(DEFAULT_TARGET_POS, 1 - Math.exp(-3 * dt));
+          controls.update();
+        }
+      }
+      return;
+    }
+
     if (selectedPlanet) {
       const mesh = meshMapRef.current.get(selectedPlanet.id);
       if (!mesh) return;
@@ -196,6 +256,7 @@ interface SolarSceneProps {
   onSelectPlanet: (planet: CelestialBodyData | null) => void;
   speedMultiplier: number;
   resetTrigger?: number;
+  isCinematicMode?: boolean;
 }
 
 export function SolarScene({
@@ -203,6 +264,7 @@ export function SolarScene({
   onSelectPlanet,
   speedMultiplier,
   resetTrigger,
+  isCinematicMode = false,
 }: SolarSceneProps) {
   const meshMapRef = useRef<Map<string, THREE.Object3D>>(new Map());
   const controlsRef = useRef<React.ComponentRef<typeof OrbitControls>>(null);
@@ -236,6 +298,7 @@ export function SolarScene({
             resetTrigger={resetTrigger}
             meshMapRef={meshMapRef}
             controlsRef={controlsRef}
+            isCinematicMode={isCinematicMode}
           />
 
           {/* Ambient Cosmic Illumination */}

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ChatMessage } from '@/lib/types';
 import { SYSTEM_PROMPT, generateEducationalFallback } from '@/lib/chatKnowledge';
 
+export const maxDuration = 30;
+
 const DEFAULT_GEMINI_CHAIN = ['gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-3.1-flash-lite'];
 
 export async function POST(request: NextRequest) {
@@ -101,6 +103,9 @@ export async function POST(request: NextRequest) {
         generationConfig: {
           temperature: 0.4,
           maxOutputTokens: 1000,
+          thinkingConfig: {
+            thinkingBudget: 0,
+          },
         },
       };
 
@@ -111,7 +116,7 @@ export async function POST(request: NextRequest) {
         let timeoutId: NodeJS.Timeout | null = null;
         try {
           const controller = new AbortController();
-          timeoutId = setTimeout(() => controller.abort(), 7000);
+          timeoutId = setTimeout(() => controller.abort(), 12000);
 
           const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
 

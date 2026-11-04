@@ -55,7 +55,7 @@ export function Navbar() {
     },
     {
       href: "/chat",
-      label: "AI Kosmonauta",
+      label: "Galacti AI",
       icon: Bot,
       description: "Edukacyjny asystent",
     },

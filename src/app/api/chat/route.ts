@@ -4,7 +4,8 @@ import { SYSTEM_PROMPT, generateEducationalFallback } from '@/lib/chatKnowledge'
 
 export const maxDuration = 30;
 
-const DEFAULT_GEMINI_CHAIN = ['gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-3.1-flash-lite'];
+// Gemini fallback chain strictly prioritized: gemini-3.8-flash -> gemini-3.5-flash -> gemini-3.1-flash-lite
+const DEFAULT_GEMINI_CHAIN = ['gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3.1-flash-lite'];
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,13 +48,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const wantsStream = body.stream !== false;
+
     // Get the last user message
     const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
     const userQuery = lastUserMessage?.content?.trim() || '';
 
     // If query is empty
     if (!userQuery) {
-      const promptHelp = 'Zadaj mi pytanie o kosmos, planety, gwiazdy lub misje kosmiczne!';
+      const promptHelp = 'Zadaj mi pytanie o kosmos, planety, gwiazdy lub misje kosmiczne.';
+      if (wantsStream) {
+        return new Response(promptHelp, {
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        });
+      }
       return NextResponse.json(
         {
           message: {
@@ -71,10 +79,10 @@ export async function POST(request: NextRequest) {
     // Basic sanitization
     const sanitizedQuery = userQuery.replace(/<[^>]*>?/gm, '');
 
-    // 1. Primary LLM Provider: Google Gemini with Fallback Chain
+    // 1. Primary LLM Provider: Google Gemini with Cascading Fallback Chain
     const geminiApiKey = process.env.GEMINI_API_KEY;
     const configuredModel = process.env.GEMINI_MODEL?.trim();
-    // Prioritize configured model if provided, followed by the stable fallback chain without duplicates
+    // Prioritize configured model if provided, followed by the prioritized chain: 3.8-flash -> 3.5-flash -> 3.1-flash-lite
     const geminiModels = configuredModel
       ? [configuredModel, ...DEFAULT_GEMINI_CHAIN.filter(m => m !== configuredModel)]
       : DEFAULT_GEMINI_CHAIN;
@@ -101,72 +109,138 @@ export async function POST(request: NextRequest) {
         },
         contents: geminiContents,
         generationConfig: {
-          temperature: 0.4,
-          maxOutputTokens: 1000,
+          temperature: 0.3,
+          maxOutputTokens: 1200,
           thinkingConfig: {
             thinkingBudget: 0,
           },
         },
       };
 
-      let successfulReply: string | null = null;
-      let usedModel: string | null = null;
-
+      // Try models in cascade order
       for (const model of geminiModels) {
         let timeoutId: NodeJS.Timeout | null = null;
         try {
           const controller = new AbortController();
           timeoutId = setTimeout(() => controller.abort(), 12000);
 
-          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+          if (wantsStream) {
+            const streamUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${geminiApiKey}`;
+            const geminiRes = await fetch(streamUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(geminiPayload),
+              signal: controller.signal,
+            });
 
-          const geminiRes = await fetch(geminiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(geminiPayload),
-            signal: controller.signal,
-          });
+            if (timeoutId) clearTimeout(timeoutId);
 
-          if (timeoutId) clearTimeout(timeoutId);
+            if (geminiRes.ok && geminiRes.body) {
+              const encoder = new TextEncoder();
+              const decoder = new TextDecoder();
+              const geminiReader = geminiRes.body.getReader();
 
-          if (geminiRes.ok) {
-            const geminiData = await geminiRes.json();
-            const replyText = geminiData.candidates?.[0]?.content?.parts
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ?.map((p: any) => p.text || '')
-              .join('')
-              .trim();
+              const transformStream = new ReadableStream({
+                async start(streamController) {
+                  let buffer = '';
+                  try {
+                    while (true) {
+                      const { done, value } = await geminiReader.read();
+                      if (done) break;
 
-            if (replyText) {
-              successfulReply = replyText;
-              usedModel = model;
-              break;
+                      buffer += decoder.decode(value, { stream: true });
+                      const lines = buffer.split('\n');
+                      buffer = lines.pop() || '';
+
+                      for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (trimmed.startsWith('data: ')) {
+                          try {
+                            const parsed = JSON.parse(trimmed.slice(6));
+                            const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+                            if (text) {
+                              streamController.enqueue(encoder.encode(text));
+                            }
+                          } catch {
+                            // Non-JSON or comment line, ignore
+                          }
+                        }
+                      }
+                    }
+
+                    if (buffer.trim().startsWith('data: ')) {
+                      try {
+                        const parsed = JSON.parse(buffer.trim().slice(6));
+                        const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (text) {
+                          streamController.enqueue(encoder.encode(text));
+                        }
+                      } catch {}
+                    }
+
+                    streamController.close();
+                  } catch (err) {
+                    streamController.error(err);
+                  }
+                },
+              });
+
+              return new Response(transformStream, {
+                headers: {
+                  'Content-Type': 'text/plain; charset=utf-8',
+                  'Cache-Control': 'no-cache, no-transform',
+                  'X-Model-Used': model,
+                },
+              });
             } else {
-              console.warn(`[Chat API] Gemini (${model}) returned 200 OK but empty candidates/text. Falling back to next model...`);
+              const errDetail = await geminiRes.text();
+              console.warn(
+                `[Chat API] Gemini (${model}) stream error ${geminiRes.status}: ${errDetail.slice(0, 180)}. Trying fallback model...`
+              );
             }
           } else {
-            const errDetail = await geminiRes.text();
-            console.warn(
-              `[Chat API] Gemini (${model}) responded with error ${geminiRes.status}: ${errDetail.slice(0, 250)}. Falling back to next model in chain...`
-            );
+            // Non-streaming fallback mode
+            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+            const geminiRes = await fetch(geminiUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(geminiPayload),
+              signal: controller.signal,
+            });
+
+            if (timeoutId) clearTimeout(timeoutId);
+
+            if (geminiRes.ok) {
+              const geminiData = await geminiRes.json();
+              const replyText = geminiData.candidates?.[0]?.content?.parts
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ?.map((p: any) => p.text || '')
+                .join('')
+                .trim();
+
+              if (replyText) {
+                return NextResponse.json({
+                  message: {
+                    role: 'assistant' as const,
+                    content: replyText,
+                  },
+                  reply: replyText,
+                  text: replyText,
+                  isFallback: false,
+                  model,
+                });
+              }
+            } else {
+              const errDetail = await geminiRes.text();
+              console.warn(
+                `[Chat API] Gemini (${model}) error ${geminiRes.status}: ${errDetail.slice(0, 180)}. Trying next...`
+              );
+            }
           }
         } catch (geminiErr) {
           if (timeoutId) clearTimeout(timeoutId);
-          console.warn(`[Chat API] Error/timeout calling Gemini (${model}):`, geminiErr);
+          console.warn(`[Chat API] Gemini (${model}) timeout/exception:`, geminiErr);
         }
-      }
-
-      if (successfulReply && usedModel) {
-        return NextResponse.json({
-          message: {
-            role: 'assistant' as const,
-            content: successfulReply,
-          },
-          reply: successfulReply,
-          text: successfulReply,
-          isFallback: false,
-          model: usedModel,
-        });
       }
     } else {
       console.info('[Chat API] GEMINI_API_KEY is not set in environment.');
@@ -197,7 +271,7 @@ export async function POST(request: NextRequest) {
           body: JSON.stringify({
             model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
             messages: openaiMessages,
-            temperature: 0.4,
+            temperature: 0.3,
             max_tokens: 1000,
           }),
           signal: controller.signal,
@@ -209,6 +283,11 @@ export async function POST(request: NextRequest) {
           const completion = await openAiRes.json();
           const assistantContent = completion.choices?.[0]?.message?.content?.trim() || '';
           if (assistantContent) {
+            if (wantsStream) {
+              return new Response(assistantContent, {
+                headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+              });
+            }
             return NextResponse.json({
               message: {
                 role: 'assistant' as const,
@@ -235,8 +314,17 @@ export async function POST(request: NextRequest) {
 
     const finalAnswer = (fallbackAnswer
       ? `${fallbackAnswer}${configNotice}`
-      : 'Witaj! Jestem Galacti AI. Zadaj mi pytanie o planety, misje kosmiczne, zaćmienia lub eksplorację Wszechświata.'
+      : 'Jestem Galacti AI. Zadaj mi pytanie o planety, misje kosmiczne, zaćmienia lub zjawiska astrofizyczne.'
     ).trim();
+
+    if (wantsStream) {
+      return new Response(finalAnswer, {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'X-Data-Source': 'educational-fallback-engine',
+        },
+      });
+    }
 
     const responsePayload = {
       message: {
@@ -258,18 +346,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[Chat API] Unhandled server error:', error);
     const errorText =
-      'Przepraszam, wystąpił chwilowy błąd serwera podczas przetwarzania Twojego pytania. Spróbuj zadać je ponownie za moment.';
-    return NextResponse.json(
-      {
-        message: {
-          role: 'assistant' as const,
-          content: errorText,
-        },
-        reply: errorText,
-        text: errorText,
-        isFallback: true,
-      },
-      { status: 500 }
-    );
+      'Wystąpił chwilowy błąd podczas przetwarzania Twojego pytania. Spróbuj zadać je ponownie za moment.';
+    return new Response(errorText, {
+      status: 500,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    });
   }
 }

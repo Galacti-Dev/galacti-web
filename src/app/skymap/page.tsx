@@ -445,14 +445,14 @@ export default function SkyMapPage() {
 
       {/* Control Toolbar */}
       <div className="border-b border-white/10 bg-zinc-950/60 px-4 sm:px-6 py-2.5 backdrop-blur-md z-10 space-y-2.5">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-2.5 text-xs">
           {/* Location Selector */}
-          <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 flex-nowrap sm:flex-wrap">
             <MapPin className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-            <span className="text-zinc-400 text-[11px] uppercase tracking-wider font-mono">
+            <span className="text-zinc-400 text-[11px] uppercase tracking-wider font-mono shrink-0">
               Lokalizacja:
             </span>
-            <div className="flex gap-1 flex-wrap">
+            <div className="flex gap-1 flex-nowrap sm:flex-wrap shrink-0">
               {CITIES.map((c) => (
                 <button
                   key={c.id}
@@ -460,7 +460,7 @@ export default function SkyMapPage() {
                     setCustomLocation(null);
                     setSelectedCityId(c.id);
                   }}
-                  className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                  className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 ${
                     !customLocation && selectedCityId === c.id
                       ? "bg-white text-black font-semibold shadow-sm"
                       : "text-zinc-400 hover:text-white hover:bg-white/10"
@@ -473,7 +473,7 @@ export default function SkyMapPage() {
               <button
                 onClick={handleRequestGPS}
                 title="Wykryj współrzędne z GPS w Twojej przeglądarce"
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer border ${
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer border shrink-0 ${
                   customLocation
                     ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
                     : "border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10"
@@ -486,13 +486,13 @@ export default function SkyMapPage() {
           </div>
 
           {/* Time & Simulation Controls */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5 flex-nowrap sm:flex-wrap">
             <Clock className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
 
             {/* Live Now Button */}
             <button
               onClick={handleLiveNow}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 ${
                 isLive && !isPlaying
                   ? "bg-white text-black font-semibold shadow-sm"
                   : "bg-white/5 text-zinc-400 hover:text-white border border-white/10"
@@ -513,7 +513,7 @@ export default function SkyMapPage() {
                 setIsPlaying((p) => !p);
               }}
               title={isPlaying ? "Zatrzymaj upływ czasu" : "Uruchom animację obrotu nieba"}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer border ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer border shrink-0 ${
                 isPlaying
                   ? "bg-emerald-500 text-black font-bold border-emerald-400"
                   : "bg-white/5 text-zinc-300 hover:text-white border-white/10"
@@ -528,7 +528,7 @@ export default function SkyMapPage() {
               <select
                 value={playSpeed}
                 onChange={(e) => setPlaySpeed(Number(e.target.value))}
-                className="rounded-lg bg-zinc-900 border border-white/15 px-2 py-1 text-[11px] text-white focus:outline-none"
+                className="rounded-lg bg-zinc-900 border border-white/15 px-2 py-1 text-[11px] text-white focus:outline-none shrink-0"
               >
                 <option value={10}>10 min / s</option>
                 <option value={60}>1h / s</option>
@@ -537,7 +537,7 @@ export default function SkyMapPage() {
             )}
 
             {/* Step Hours */}
-            <div className="flex items-center border border-white/10 rounded-lg overflow-hidden bg-black/40">
+            <div className="flex items-center border border-white/10 rounded-lg overflow-hidden bg-black/40 shrink-0">
               <button
                 onClick={() => handleShiftTime(-1)}
                 title="Cofnij o 1 godzinę"
@@ -557,7 +557,7 @@ export default function SkyMapPage() {
             </div>
 
             {/* Quick Night Hours */}
-            <div className="hidden sm:flex gap-1">
+            <div className="hidden sm:flex gap-1 shrink-0">
               <button
                 onClick={() => handleSetHour(21)}
                 className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-zinc-300 cursor-pointer"
@@ -579,7 +579,7 @@ export default function SkyMapPage() {
             </div>
 
             {/* Current Time Display */}
-            <span className="font-mono text-[11px] text-white font-semibold bg-white/10 px-2.5 py-1 rounded-lg border border-white/15">
+            <span className="font-mono text-[11px] text-white font-semibold bg-white/10 px-2.5 py-1 rounded-lg border border-white/15 shrink-0">
               {simulatedTime.toLocaleTimeString("pl-PL", {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -588,12 +588,12 @@ export default function SkyMapPage() {
           </div>
 
           {/* Layer Toggles */}
-          <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 flex-nowrap sm:flex-wrap">
             <Layers className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-            <div className="flex items-center gap-1 flex-wrap">
+            <div className="flex items-center gap-1 flex-nowrap sm:flex-wrap shrink-0">
               <button
                 onClick={() => setShowMilkyWay((v) => !v)}
-                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border ${
+                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
                   showMilkyWay
                     ? "bg-white text-black font-semibold border-white"
                     : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
@@ -605,7 +605,7 @@ export default function SkyMapPage() {
 
               <button
                 onClick={() => setShowConstellations((v) => !v)}
-                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border ${
+                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
                   showConstellations
                     ? "bg-white text-black font-semibold border-white"
                     : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
@@ -617,7 +617,7 @@ export default function SkyMapPage() {
 
               <button
                 onClick={() => setShowLabels((v) => !v)}
-                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border ${
+                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
                   showLabels
                     ? "bg-white text-black font-semibold border-white"
                     : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
@@ -629,7 +629,7 @@ export default function SkyMapPage() {
 
               <button
                 onClick={() => setShowDso((v) => !v)}
-                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border ${
+                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
                   showDso
                     ? "bg-white text-black font-semibold border-white"
                     : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
@@ -641,7 +641,7 @@ export default function SkyMapPage() {
 
               <button
                 onClick={() => setShowGrid((v) => !v)}
-                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border ${
+                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
                   showGrid
                     ? "bg-white text-black font-semibold border-white"
                     : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
@@ -653,7 +653,7 @@ export default function SkyMapPage() {
 
               <button
                 onClick={() => setShowHorizon((v) => !v)}
-                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border ${
+                className={`px-2 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer border shrink-0 ${
                   showHorizon
                     ? "bg-white text-black font-semibold border-white"
                     : "border-white/10 bg-white/5 text-zinc-400 hover:text-white"
@@ -667,7 +667,7 @@ export default function SkyMapPage() {
               <select
                 value={minMagLimit}
                 onChange={(e) => setMinMagLimit(Number(e.target.value))}
-                className="rounded-lg bg-zinc-900 border border-white/15 px-2 py-1 text-[11px] text-white focus:outline-none cursor-pointer"
+                className="rounded-lg bg-zinc-900 border border-white/15 px-2 py-1 text-[11px] text-white focus:outline-none cursor-pointer shrink-0"
                 title="Filtr zasięgu jasności gwiazd"
               >
                 <option value={6.0}>Wszystkie gwiazdy (do 6m)</option>
@@ -733,7 +733,11 @@ export default function SkyMapPage() {
         />
 
         {/* Curated Highlights Quick Selector (Bottom Left Pills) */}
-        <div className="absolute left-4 bottom-4 z-20 flex flex-wrap items-center gap-2 pointer-events-none max-w-[calc(100vw-2rem)]">
+        <div
+          className={`absolute left-4 bottom-4 z-20 flex flex-wrap items-center gap-2 pointer-events-none max-w-[calc(100vw-2rem)] ${
+            selectedObject ? "hidden sm:flex" : "flex"
+          }`}
+        >
           {/* Quick Info Badge */}
           <div className="pointer-events-auto flex items-center gap-2 rounded-xl border border-white/10 bg-zinc-950/85 px-3 py-2 text-xs backdrop-blur-md text-zinc-300">
             <Info className="h-3.5 w-3.5 text-zinc-400" />

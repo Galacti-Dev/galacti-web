@@ -115,3 +115,22 @@ export const CONSTELLATION_NAMES_PL: Record<string, string> = {
   Lyr: "Lutnia",
   And: "Andromeda",
 };
+
+/**
+ * Zwięzłe polskie nazwy gwiazdozbiorów do czystego wyświetlania na planisferze (bez dublowania nawiasów)
+ */
+export const CONSTELLATION_SHORT_NAMES_PL: Record<string, string> = {
+  UMa: "Wielka Niedźwiedzica",
+  UMi: "Mała Niedźwiedzica",
+  Cas: "Kasjopeja",
+  Ori: "Orion",
+  Cyg: "Łabędź",
+  Peg_And: "Pegaz",
+  Gem: "Bliźnięta",
+  Leo: "Lew",
+  Tau: "Byk",
+  Her: "Herkules",
+  Lyr: "Lutnia",
+  And: "Andromeda",
+};
+

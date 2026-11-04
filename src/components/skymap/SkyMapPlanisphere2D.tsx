@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useRef, useEffect, useCallback } from "react";
+import { useMemo, useState, useRef, useEffect, useCallback, useSyncExternalStore } from "react";
 import {
   ZoomIn,
   ZoomOut,
@@ -11,6 +11,7 @@ import {
   horizontalToPlanisphere2D,
   equatorialToHorizontal,
   CONSTELLATION_NAMES_PL,
+  CONSTELLATION_SHORT_NAMES_PL,
 } from "@/lib/astronomyMath";
 
 interface SkyMapPlanisphere2DProps {
@@ -83,8 +84,21 @@ export function SkyMapPlanisphere2D({
   const dragStartRef = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
   const touchDistanceRef = useRef<number | null>(null);
 
-  // Hover state
+  // Fine pointer (mouse) detection to disable hover tooltips on touch devices
+  const hasFinePointer = useSyncExternalStore(
+    (callback) => {
+      if (typeof window === "undefined") return () => {};
+      const media = window.matchMedia("(hover: hover) and (pointer: fine)");
+      media.addEventListener("change", callback);
+      return () => media.removeEventListener("change", callback);
+    },
+    () => (typeof window !== "undefined" ? window.matchMedia("(hover: hover) and (pointer: fine)").matches : false),
+    () => false
+  );
+
+  // Hover state (only active on fine pointer devices like desktops with mouse)
   const [hoveredItem, setHoveredItem] = useState<{
+    id: string;
     type: "star" | "dso" | "constellation";
     title: string;
     subtitle: string;
@@ -147,6 +161,7 @@ export function SkyMapPlanisphere2D({
 
   // Touch drag & pinch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
+    setHoveredItem(null);
     if (e.touches.length === 1) {
       setIsDragging(true);
       dragStartRef.current = {
@@ -292,7 +307,7 @@ export function SkyMapPlanisphere2D({
         const avgY = group.pts.reduce((sum, p) => sum + p.y, 0) / group.pts.length;
         centers.push({
           con,
-          name: CONSTELLATION_NAMES_PL[con] || con,
+          name: CONSTELLATION_SHORT_NAMES_PL[con] || CONSTELLATION_NAMES_PL[con] || con,
           stars: group.stars,
           x: avgX,
           y: avgY,
@@ -696,35 +711,37 @@ export function SkyMapPlanisphere2D({
                         data: { con: c.con, stars: c.stars },
                       });
                     }}
-                    onMouseEnter={() =>
+                    onMouseEnter={() => {
+                      if (!hasFinePointer) return;
                       setHoveredItem({
+                        id: c.con,
                         type: "constellation",
                         title: c.name,
                         subtitle: `Gwiazdozbiór (${c.con})`,
                         details: `${c.stars.length} gwiazd w katalogu`,
                         x: c.x,
                         y: c.y,
-                      })
-                    }
+                      });
+                    }}
                     onMouseLeave={() => setHoveredItem(null)}
                   >
-                    {/* Subtle label background chip for crystal clear legibility */}
+                    {/* Subtle compact label background chip for crystal clear legibility */}
                     <rect
-                      x={c.x - (c.name.length * 2.8 + 6)}
-                      y={c.y - 7}
-                      width={c.name.length * 5.6 + 12}
-                      height="14"
-                      rx="4"
-                      fill={isSelected ? "rgba(255, 255, 255, 0.2)" : "rgba(10, 14, 24, 0.65)"}
+                      x={c.x - (c.name.length * 2.5 + 5)}
+                      y={c.y - 6}
+                      width={c.name.length * 5.0 + 10}
+                      height="12"
+                      rx="3"
+                      fill={isSelected ? "rgba(255, 255, 255, 0.22)" : "rgba(10, 14, 24, 0.7)"}
                       stroke={isSelected ? "#ffffff" : "rgba(255, 255, 255, 0.15)"}
                       strokeWidth="0.8"
                       className="transition-all group-hover:fill-white/20 group-hover:stroke-white/40"
                     />
                     <text
                       x={c.x}
-                      y={c.y + 3}
+                      y={c.y + 2.5}
                       fill={isSelected ? "#ffffff" : "rgba(220, 235, 255, 0.85)"}
-                      fontSize="8.5"
+                      fontSize="7.5"
                       fontFamily="sans-serif"
                       fontWeight="bold"
                       textAnchor="middle"
@@ -753,16 +770,18 @@ export function SkyMapPlanisphere2D({
                           data: dso,
                         });
                       }}
-                      onMouseEnter={() =>
+                      onMouseEnter={() => {
+                        if (!hasFinePointer) return;
                         setHoveredItem({
+                          id: dso.id,
                           type: "dso",
                           title: dso.namePl,
                           subtitle: `${dso.id} • ${dso.nameEn}`,
                           details: `Alt: ${dso.horizontal?.alt.toFixed(1)}° | Az: ${dso.horizontal?.az.toFixed(0)}° | ${dso.mag.toFixed(1)}m`,
                           x,
                           y,
-                        })
-                      }
+                        });
+                      }}
                       onMouseLeave={() => setHoveredItem(null)}
                     >
                       {/* Spiral Galaxy Representation (e.g. M31) */}
@@ -832,17 +851,31 @@ export function SkyMapPlanisphere2D({
 
                       {/* DSO Label */}
                       {showLabels && (
-                        <text
-                          x={x + 10}
-                          y={y + 3}
-                          fill={isSelected ? "#ffffff" : "#d4d4d8"}
-                          fontSize="9"
-                          fontFamily="monospace"
-                          fontWeight="bold"
-                          className="select-none pointer-events-none drop-shadow"
-                        >
-                          {dso.id}
-                        </text>
+                        <g className="pointer-events-none select-none">
+                          {isSelected && (
+                            <rect
+                              x={x + 15}
+                              y={y - 7}
+                              width={dso.id.length * 7 + 8}
+                              height="14"
+                              rx="3"
+                              fill="rgba(9, 9, 11, 0.85)"
+                              stroke="#ffffff"
+                              strokeWidth="0.8"
+                            />
+                          )}
+                          <text
+                            x={isSelected ? x + 19 : x + 11}
+                            y={isSelected ? y + 3.5 : y + 3}
+                            fill={isSelected ? "#ffffff" : "#d4d4d8"}
+                            fontSize={isSelected ? "9" : "8.5"}
+                            fontFamily="monospace"
+                            fontWeight="bold"
+                            className="drop-shadow"
+                          >
+                            {dso.id}
+                          </text>
+                        </g>
                       )}
                     </g>
                   );
@@ -871,16 +904,18 @@ export function SkyMapPlanisphere2D({
                           data: star,
                         });
                       }}
-                      onMouseEnter={() =>
+                      onMouseEnter={() => {
+                        if (!hasFinePointer) return;
                         setHoveredItem({
+                          id: star.id,
                           type: "star",
                           title: star.name,
-                          subtitle: `${star.bayer} • ${CONSTELLATION_NAMES_PL[star.con] || star.con}`,
+                          subtitle: `${star.bayer} • ${CONSTELLATION_SHORT_NAMES_PL[star.con] || CONSTELLATION_NAMES_PL[star.con] || star.con}`,
                           details: `Alt: ${star.horizontal?.alt.toFixed(1)}° | Az: ${star.horizontal?.az.toFixed(0)}° | ${star.mag.toFixed(2)}m`,
                           x,
                           y,
-                        })
-                      }
+                        });
+                      }}
                       onMouseLeave={() => setHoveredItem(null)}
                     >
                       {/* Diffraction Spikes for 1st Magnitude Superstars */}
@@ -933,13 +968,13 @@ export function SkyMapPlanisphere2D({
                         </g>
                       )}
 
-                      {/* Star Name Label */}
-                      {showLabels && star.mag <= 2.2 && (
+                      {/* Star Name Label with Dynamic Level-of-Detail */}
+                      {showLabels && (zoom > 1.25 ? star.mag <= 2.4 : star.mag <= 1.5) && (
                         <text
                           x={x + r + 3.5}
                           y={y + 3}
                           fill={isSelected ? "#ffffff" : "#f4f4f5"}
-                          fontSize={star.mag <= 1.0 ? "10" : "8.5"}
+                          fontSize={star.mag <= 1.0 ? "9.5" : "8"}
                           fontFamily="sans-serif"
                           fontWeight={star.mag <= 1.0 ? "bold" : "normal"}
                           className="select-none pointer-events-none drop-shadow"
@@ -1058,8 +1093,8 @@ export function SkyMapPlanisphere2D({
             </g>
           )}
 
-          {/* Interactive Hover Tooltip */}
-          {hoveredItem && (
+          {/* Interactive Hover Tooltip (Only on desktop/fine-pointer and when item is not selected) */}
+          {hoveredItem && hasFinePointer && selectedId !== hoveredItem.id && (
             <g
               transform={`translate(${Math.min(
                 Math.max(hoveredItem.x, 80),

@@ -12,16 +12,22 @@ import {
 } from "lucide-react";
 import { AstronomicalEvent, AstronomicalEventType } from "@/lib/types";
 import rawEvents from "@/data/astronomical_events.json";
+import {
+  getActiveAndUpcomingEvents,
+  isEventActiveOrUpcomingTime,
+} from "@/lib/eventUtils";
+import { useCurrentTimestamp } from "@/lib/useCurrentTimestamp";
 import { NextEventHero } from "@/components/calendar/NextEventHero";
 import { EventCard } from "@/components/calendar/EventCard";
 import { EventTimeline } from "@/components/calendar/EventTimeline";
 
-const fallbackEvents = rawEvents as AstronomicalEvent[];
+const fallbackEvents = getActiveAndUpcomingEvents(rawEvents as AstronomicalEvent[]);
 
 type FilterCategory = "all" | AstronomicalEventType;
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<AstronomicalEvent[]>(fallbackEvents);
+  const currentTimestamp = useCurrentTimestamp();
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("all");
   const [onlyPolandVisible, setOnlyPolandVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,6 +61,11 @@ export default function CalendarPage() {
 
   const filteredEvents = useMemo(() => {
     return events.filter((event) => {
+      // Must be currently active or upcoming
+      if (!isEventActiveOrUpcomingTime(event, currentTimestamp)) {
+        return false;
+      }
+
       // Category filter
       if (activeCategory !== "all" && event.type !== activeCategory) {
         return false;
@@ -80,7 +91,7 @@ export default function CalendarPage() {
 
       return true;
     });
-  }, [events, activeCategory, onlyPolandVisible, searchQuery]);
+  }, [events, activeCategory, onlyPolandVisible, searchQuery, currentTimestamp]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
@@ -88,7 +99,7 @@ export default function CalendarPage() {
       <div className="space-y-3">
         <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-zinc-300 border border-white/15">
           <Calendar className="h-3.5 w-3.5 text-zinc-300" />
-          <span>Efemerydy i Zjawiska 2026–2027</span>
+          <span>Aktywne i Nadchodzące Zjawiska</span>
         </div>
 
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
@@ -96,8 +107,8 @@ export default function CalendarPage() {
         </h1>
 
         <p className="text-sm sm:text-base text-zinc-400 max-w-3xl leading-relaxed">
-          Oficjalne efemerydy roczne zweryfikowane w oparciu o bazy IMO, NASA Eclipse Web Site oraz JPL Horizons.
-          Szczególny nacisk na widoczność, warunki fazy Księżyca oraz wskazówki obserwacyjne dla terytorium Polski.
+          Oficjalne efemerydy roczne zjawisk obecnie trwających oraz przyszłych, zweryfikowane w oparciu o bazy IMO, NASA Eclipse Web Site oraz JPL Horizons.
+          Zakończone wydarzenia są automatycznie wyłączane z kalendarza.
         </p>
       </div>
 

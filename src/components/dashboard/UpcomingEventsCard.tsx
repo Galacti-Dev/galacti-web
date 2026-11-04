@@ -10,10 +10,11 @@ import {
 } from "lucide-react";
 import { AstronomicalEvent } from "@/lib/types";
 import rawEvents from "@/data/astronomical_events.json";
+import { getActiveAndUpcomingEvents } from "@/lib/eventUtils";
 import { useIsMounted } from "@/lib/useIsMounted";
 import { getEventTypeBadge, getVisibilityBadge, getEquipmentBadge } from "@/components/calendar/EventCard";
 
-const defaultEvents = rawEvents as AstronomicalEvent[];
+const defaultEvents = getActiveAndUpcomingEvents(rawEvents as AstronomicalEvent[]);
 
 export function UpcomingEventsCard() {
   const [events, setEvents] = useState<AstronomicalEvent[]>(defaultEvents);
@@ -26,7 +27,7 @@ export function UpcomingEventsCard() {
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {
-            setEvents(data);
+            setEvents(getActiveAndUpcomingEvents(data));
           }
         }
       } catch {

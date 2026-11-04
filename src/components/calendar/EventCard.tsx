@@ -133,7 +133,8 @@ function formatDate(dateStr: string, mounted: boolean): string {
 function getRelativeCountdown(targetDateStr: string, endDateStr: string) {
   const now = new Date();
   const peak = new Date(targetDateStr);
-  const end = new Date(endDateStr);
+  const endIso = endDateStr.includes("T") ? endDateStr : `${endDateStr}T23:59:59.999Z`;
+  const end = new Date(endIso);
 
   if (now > end) {
     return { label: "Zakończone", isPast: true, isOngoing: false };

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AstronomicalEvent, AstronomicalEventType, VisibilityPoland } from "@/lib/types";
 import rawEvents from "@/data/astronomical_events.json";
+import { isEventActiveOrUpcoming } from "@/lib/eventUtils";
 
 const events = rawEvents as AstronomicalEvent[];
 
@@ -9,9 +10,15 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const typeParam = searchParams.get("type");
     const visibilityParam = searchParams.get("visibility");
-    const upcomingParam = searchParams.get("upcoming");
+    const includePast = searchParams.get("include_past") === "true" || searchParams.get("all") === "true";
 
     let filtered = [...events];
+
+    // By default, filter out past events so that only currently ongoing or future events appear
+    if (!includePast) {
+      const now = new Date();
+      filtered = filtered.filter((event) => isEventActiveOrUpcoming(event, now));
+    }
 
     if (typeParam) {
       filtered = filtered.filter((event) => event.type === (typeParam as AstronomicalEventType));
@@ -21,14 +28,6 @@ export async function GET(request: NextRequest) {
       filtered = filtered.filter(
         (event) => event.visibilityPoland === (visibilityParam as VisibilityPoland)
       );
-    }
-
-    if (upcomingParam === "true") {
-      const now = new Date();
-      filtered = filtered.filter((event) => {
-        const end = new Date(event.endDate);
-        return end >= now || event.endDate >= now.toISOString().slice(0, 10);
-      });
     }
 
     // Sort chronologically by peakDate

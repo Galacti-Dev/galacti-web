@@ -1,9 +1,10 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { Sparkles, Clock, Calendar } from "lucide-react";
 import { AstronomicalEvent } from "@/lib/types";
 import { useIsMounted } from "@/lib/useIsMounted";
+import { STATIC_REFERENCE_DATE, isEventActiveOrUpcomingTime } from "@/lib/eventUtils";
 import { getEventTypeBadge, getVisibilityBadge, getEquipmentBadge } from "./EventCard";
 
 interface NextEventHeroProps {
@@ -16,19 +17,6 @@ interface TimeLeft {
   minutes: number;
   seconds: number;
   isPast: boolean;
-}
-
-function subscribe(callback: () => void) {
-  const timer = setInterval(callback, 1000);
-  return () => clearInterval(timer);
-}
-
-function getClientTime(): number {
-  return Date.now();
-}
-
-function getServerTime(): number | null {
-  return null;
 }
 
 function calculateTimeLeft(targetIso: string, currentTime: number | null): TimeLeft {
@@ -50,15 +38,21 @@ function calculateTimeLeft(targetIso: string, currentTime: number | null): TimeL
 
 export function NextEventHero({ events }: NextEventHeroProps) {
   const mounted = useIsMounted();
-  const currentTime = useSyncExternalStore(subscribe, getClientTime, getServerTime);
+  const [currentTime, setCurrentTime] = useState<number | null>(null);
 
-  // Find next upcoming event (or default to first)
-  const nextEvent =
-    (currentTime
-      ? events.find((e) => new Date(e.endDate).getTime() >= currentTime)
-      : null) ||
-    events[0] ||
-    null;
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrentTime(Date.now());
+    const timer = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Filter to currently active or upcoming events
+  const referenceTime = currentTime ?? STATIC_REFERENCE_DATE.getTime();
+  const activeEvents = events.filter((e) => isEventActiveOrUpcomingTime(e, referenceTime));
+  const nextEvent = activeEvents[0] || events[0] || null;
 
   if (!nextEvent) return null;
 
@@ -100,7 +94,7 @@ export function NextEventHero({ events }: NextEventHeroProps) {
           <div className="flex flex-wrap items-center gap-3 pt-2 text-xs text-zinc-400">
             <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-zinc-200">
               <Calendar className="h-3.5 w-3.5 text-zinc-400" />
-              <span>
+              <span suppressHydrationWarning>
                 {mounted
                   ? new Date(nextEvent.peakDate).toLocaleDateString("pl-PL", {
                       day: "numeric",
@@ -130,14 +124,14 @@ export function NextEventHero({ events }: NextEventHeroProps) {
             <span>Odliczanie do apogeum:</span>
           </div>
 
-          {timeLeft.isPast ? (
+          {mounted && timeLeft.isPast ? (
             <div className="py-4 text-center">
               <span className="text-xl font-bold text-emerald-400">Zjawisko w trakcie lub zakończone!</span>
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-2 sm:gap-3 w-full text-center">
+            <div className="grid grid-cols-4 gap-2 sm:gap-3 w-full text-center" suppressHydrationWarning>
               <div className="rounded-xl border border-white/10 bg-white/5 p-2 sm:p-3">
-                <span className="block text-2xl sm:text-3xl font-black font-mono text-white">
+                <span className="block text-2xl sm:text-3xl font-black font-mono text-white" suppressHydrationWarning>
                   {timeLeft.days}
                 </span>
                 <span className="text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider">
@@ -145,7 +139,7 @@ export function NextEventHero({ events }: NextEventHeroProps) {
                 </span>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 p-2 sm:p-3">
-                <span className="block text-2xl sm:text-3xl font-black font-mono text-white">
+                <span className="block text-2xl sm:text-3xl font-black font-mono text-white" suppressHydrationWarning>
                   {String(timeLeft.hours).padStart(2, "0")}
                 </span>
                 <span className="text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider">
@@ -153,7 +147,7 @@ export function NextEventHero({ events }: NextEventHeroProps) {
                 </span>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 p-2 sm:p-3">
-                <span className="block text-2xl sm:text-3xl font-black font-mono text-white">
+                <span className="block text-2xl sm:text-3xl font-black font-mono text-white" suppressHydrationWarning>
                   {String(timeLeft.minutes).padStart(2, "0")}
                 </span>
                 <span className="text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider">
@@ -161,7 +155,7 @@ export function NextEventHero({ events }: NextEventHeroProps) {
                 </span>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/5 p-2 sm:p-3">
-                <span className="block text-2xl sm:text-3xl font-black font-mono text-white">
+                <span className="block text-2xl sm:text-3xl font-black font-mono text-white" suppressHydrationWarning>
                   {String(timeLeft.seconds).padStart(2, "0")}
                 </span>
                 <span className="text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider">

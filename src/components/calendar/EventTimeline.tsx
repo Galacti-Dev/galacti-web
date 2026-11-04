@@ -44,7 +44,7 @@ export function EventTimeline({ events }: EventTimelineProps) {
             {/* Date Tag above card */}
             <div className="mb-2 flex items-center gap-2 text-xs font-mono text-zinc-400 uppercase tracking-wider">
               <Clock className="h-3.5 w-3.5 text-zinc-400" />
-              <span>Krok {index + 1} • {yearMonth}</span>
+              <span suppressHydrationWarning>Krok {index + 1} • {yearMonth}</span>
             </div>
 
             {/* Event Card */}

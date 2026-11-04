@@ -219,6 +219,7 @@ export function EventCard({ event, isTimeline = false }: EventCardProps) {
                   ? "bg-zinc-800 text-zinc-500 border-zinc-700"
                   : "bg-white/10 text-zinc-200 border-white/15"
               }`}
+              suppressHydrationWarning
             >
               {countdown.label}
             </span>
@@ -230,7 +231,7 @@ export function EventCard({ event, isTimeline = false }: EventCardProps) {
           <div className="flex items-center gap-2 text-white font-medium">
             <Clock className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
             <span className="text-zinc-400">Kulminacja (szczyt):</span>
-            <span className="font-semibold text-white">
+            <span className="font-semibold text-white" suppressHydrationWarning>
               {formatDate(event.peakDate, mounted)}
             </span>
           </div>
@@ -238,10 +239,10 @@ export function EventCard({ event, isTimeline = false }: EventCardProps) {
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-zinc-400 pt-1 border-t border-white/5">
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3 text-zinc-500" />
-              <span>Od: {formatDate(event.startDate, mounted)}</span>
+              <span suppressHydrationWarning>Od: {formatDate(event.startDate, mounted)}</span>
             </div>
             <div className="flex items-center gap-1">
-              <span>Do: {formatDate(event.endDate, mounted)}</span>
+              <span suppressHydrationWarning>Do: {formatDate(event.endDate, mounted)}</span>
             </div>
           </div>
         </div>

@@ -12,11 +12,7 @@ import {
 } from "lucide-react";
 import { AstronomicalEvent, AstronomicalEventType } from "@/lib/types";
 import rawEvents from "@/data/astronomical_events.json";
-import {
-  getActiveAndUpcomingEvents,
-  isEventActiveOrUpcomingTime,
-} from "@/lib/eventUtils";
-import { useCurrentTimestamp } from "@/lib/useCurrentTimestamp";
+import { getActiveAndUpcomingEvents } from "@/lib/eventUtils";
 import { NextEventHero } from "@/components/calendar/NextEventHero";
 import { EventCard } from "@/components/calendar/EventCard";
 import { EventTimeline } from "@/components/calendar/EventTimeline";
@@ -27,7 +23,6 @@ type FilterCategory = "all" | AstronomicalEventType;
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<AstronomicalEvent[]>(fallbackEvents);
-  const currentTimestamp = useCurrentTimestamp();
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("all");
   const [onlyPolandVisible, setOnlyPolandVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -61,11 +56,6 @@ export default function CalendarPage() {
 
   const filteredEvents = useMemo(() => {
     return events.filter((event) => {
-      // Must be currently active or upcoming
-      if (!isEventActiveOrUpcomingTime(event, currentTimestamp)) {
-        return false;
-      }
-
       // Category filter
       if (activeCategory !== "all" && event.type !== activeCategory) {
         return false;
@@ -91,7 +81,7 @@ export default function CalendarPage() {
 
       return true;
     });
-  }, [events, activeCategory, onlyPolandVisible, searchQuery, currentTimestamp]);
+  }, [events, activeCategory, onlyPolandVisible, searchQuery]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
@@ -143,6 +133,7 @@ export default function CalendarPage() {
                   className={`rounded-full px-1.5 py-0.2 text-[10px] ${
                     isActive ? "bg-black/20 text-black font-bold" : "bg-white/10 text-zinc-400"
                   }`}
+                  suppressHydrationWarning
                 >
                   {count}
                 </span>

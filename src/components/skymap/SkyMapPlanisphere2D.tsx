@@ -34,6 +34,17 @@ interface SkyMapPlanisphere2DProps {
   }) => void;
   targetFocus?: { x: number; y: number } | null;
   fovPresetId?: string;
+  isNightVision?: boolean;
+}
+
+function triggerHaptic(duration = 18) {
+  if (typeof window !== "undefined" && "vibrate" in navigator) {
+    try {
+      navigator.vibrate(duration);
+    } catch {
+      // ignore
+    }
+  }
 }
 
 const CX = 300;
@@ -76,6 +87,7 @@ export function SkyMapPlanisphere2D({
   onSelectObject,
   targetFocus,
   fovPresetId,
+  isNightVision = false,
 }: SkyMapPlanisphere2DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -456,17 +468,17 @@ export function SkyMapPlanisphere2D({
 
           {/* Deep Space Sky Gradient */}
           <radialGradient id="sky-gradient" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#0c111d" />
-            <stop offset="45%" stopColor="#080c14" />
-            <stop offset="85%" stopColor="#04060a" />
+            <stop offset="0%" stopColor={isNightVision ? "#1a0000" : "#0c111d"} />
+            <stop offset="45%" stopColor={isNightVision ? "#100000" : "#080c14"} />
+            <stop offset="85%" stopColor={isNightVision ? "#080000" : "#04060a"} />
             <stop offset="100%" stopColor="#000000" />
           </radialGradient>
 
           {/* Atmospheric Glow near Horizon */}
           <radialGradient id="horizon-glow" cx="50%" cy="50%" r="50%">
             <stop offset="80%" stopColor="transparent" />
-            <stop offset="97%" stopColor="rgba(40, 70, 110, 0.12)" />
-            <stop offset="100%" stopColor="rgba(80, 120, 180, 0.22)" />
+            <stop offset="97%" stopColor={isNightVision ? "rgba(180, 20, 20, 0.12)" : "rgba(40, 70, 110, 0.12)"} />
+            <stop offset="100%" stopColor={isNightVision ? "rgba(220, 30, 30, 0.22)" : "rgba(80, 120, 180, 0.22)"} />
           </radialGradient>
 
           {/* Milky Way Soft Glow Filter */}
@@ -494,7 +506,7 @@ export function SkyMapPlanisphere2D({
         </defs>
 
         {/* Outer Background Frame */}
-        <rect width="600" height="600" fill="#050508" />
+        <rect width="600" height="600" fill={isNightVision ? "#0d0000" : "#050508"} />
 
         {/* Master Scalable Sky Group (Transformed with Zoom & Pan) */}
         <g
@@ -692,8 +704,8 @@ export function SkyMapPlanisphere2D({
                     y2={line.y2}
                     stroke={
                       line.isSelected
-                        ? "#ffffff"
-                        : "rgba(160, 200, 255, 0.32)"
+                        ? (isNightVision ? "#ff3333" : "#ffffff")
+                        : (isNightVision ? "rgba(220, 40, 40, 0.45)" : "rgba(160, 200, 255, 0.32)")
                     }
                     strokeWidth={line.isSelected ? 1.8 : 1.1}
                     strokeDasharray="none"
@@ -714,6 +726,7 @@ export function SkyMapPlanisphere2D({
                     className="cursor-pointer group"
                     onClick={(e) => {
                       e.stopPropagation();
+                      triggerHaptic(18);
                       onSelectObject({
                         type: "constellation",
                         data: { con: c.con, stars: c.stars },
@@ -773,6 +786,7 @@ export function SkyMapPlanisphere2D({
                       className="cursor-pointer group"
                       onClick={(e) => {
                         e.stopPropagation();
+                        triggerHaptic(18);
                         onSelectObject({
                           type: "dso",
                           data: dso,
@@ -907,6 +921,7 @@ export function SkyMapPlanisphere2D({
                       className="cursor-pointer group"
                       onClick={(e) => {
                         e.stopPropagation();
+                        triggerHaptic(18);
                         onSelectObject({
                           type: "star",
                           data: star,
@@ -928,7 +943,7 @@ export function SkyMapPlanisphere2D({
                     >
                       {/* Diffraction Spikes for 1st Magnitude Superstars */}
                       {isVeryBright && (
-                        <g className="pointer-events-none opacity-80" stroke={star.color} strokeWidth="0.8">
+                        <g className="pointer-events-none opacity-80" stroke={isNightVision ? "#ff4444" : star.color} strokeWidth="0.8">
                           <line x1={x - r * 3.8} y1={y} x2={x + r * 3.8} y2={y} />
                           <line x1={x} y1={y - r * 3.8} x2={x} y2={y + r * 3.8} />
                         </g>
@@ -940,7 +955,7 @@ export function SkyMapPlanisphere2D({
                           cx={x}
                           cy={y}
                           r={r * (isVeryBright ? 2.6 : 1.8)}
-                          fill={star.color}
+                          fill={isNightVision ? "#ff3333" : star.color}
                           opacity={isVeryBright ? 0.35 : 0.2}
                           filter="url(#star-flare)"
                         />
@@ -951,8 +966,8 @@ export function SkyMapPlanisphere2D({
                         cx={x}
                         cy={y}
                         r={r}
-                        fill={star.color}
-                        stroke={isSelected ? "#ffffff" : "none"}
+                        fill={isNightVision ? "#ff5555" : star.color}
+                        stroke={isSelected ? (isNightVision ? "#ff2222" : "#ffffff") : "none"}
                         strokeWidth={isSelected ? 1.5 : 0}
                       />
 
@@ -964,15 +979,14 @@ export function SkyMapPlanisphere2D({
                             cy={y}
                             r={r + 6}
                             fill="none"
-                            stroke="#ffffff"
+                            stroke={isNightVision ? "#ff2222" : "#ffffff"}
                             strokeWidth="1.5"
                             strokeDasharray="3 3"
                           />
                           {/* Corner alignment ticks */}
-                          <line x1={x - r - 9} y1={y} x2={x - r - 4} y2={y} stroke="#ffffff" strokeWidth="1.5" />
-                          <line x1={x + r + 4} y1={y} x2={x + r + 9} y2={y} stroke="#ffffff" strokeWidth="1.5" />
-                          <line x1={x} y1={y - r - 9} x2={x} y2={y - r - 4} stroke="#ffffff" strokeWidth="1.5" />
-                          <line x1={x} y1={y + r + 4} x2={x} y2={y + r + 9} stroke="#ffffff" strokeWidth="1.5" />
+                          <line x1={x - r - 9} y1={y} x2={x - r - 4} y2={y} stroke={isNightVision ? "#ff2222" : "#ffffff"} strokeWidth="1.5" />
+                          <line x1={x + r + 4} y1={y} x2={x + r + 9} y2={y} stroke={isNightVision ? "#ff2222" : "#ffffff"} strokeWidth="1.5" />
+                          <line x1={x} y1={y - r - 9} x2={x} y2={y - r - 4} stroke={isNightVision ? "#ff2222" : "#ffffff"} strokeWidth="1.5" />
                         </g>
                       )}
 
@@ -1020,6 +1034,9 @@ export function SkyMapPlanisphere2D({
                   }
                 }
 
+                const reticleColor = isNightVision ? "#ff3333" : "#ffffff";
+                const reticleFill = isNightVision ? "rgba(255, 30, 30, 0.05)" : "rgba(255, 255, 255, 0.03)";
+
                 if (activeFovPreset.reticle === "telrad") {
                   // Telrad: 3 concentric circles 0.5°, 2.0°, 4.0°
                   const r1 = (0.5 / 2) * degToPx;
@@ -1028,21 +1045,21 @@ export function SkyMapPlanisphere2D({
 
                   return (
                     <g>
-                      <circle cx={fx} cy={fy} r={r3} fill="rgba(255, 255, 255, 0.04)" />
-                      <circle cx={fx} cy={fy} r={r1} fill="none" stroke="#ffffff" strokeWidth="1" strokeDasharray="3 2" opacity="0.9" />
-                      <circle cx={fx} cy={fy} r={r2} fill="none" stroke="#ffffff" strokeWidth="1.2" strokeDasharray="4 3" opacity="0.85" />
-                      <circle cx={fx} cy={fy} r={r3} fill="none" stroke="#ffffff" strokeWidth="1.5" strokeDasharray="5 3" opacity="0.8" />
+                      <circle cx={fx} cy={fy} r={r3} fill={reticleFill} />
+                      <circle cx={fx} cy={fy} r={r1} fill="none" stroke={reticleColor} strokeWidth="1" strokeDasharray="3 2" opacity="0.9" />
+                      <circle cx={fx} cy={fy} r={r2} fill="none" stroke={reticleColor} strokeWidth="1.2" strokeDasharray="4 3" opacity="0.85" />
+                      <circle cx={fx} cy={fy} r={r3} fill="none" stroke={reticleColor} strokeWidth="1.5" strokeDasharray="5 3" opacity="0.8" />
                       {/* Directional alignment ticks */}
-                      <line x1={fx} y1={fy - r3 - 5} x2={fx} y2={fy - r2} stroke="#ffffff" strokeWidth="1.2" opacity="0.75" />
-                      <line x1={fx} y1={fy + r2} x2={fx} y2={fy + r3 + 5} stroke="#ffffff" strokeWidth="1.2" opacity="0.75" />
-                      <line x1={fx - r3 - 5} y1={fy} x2={fx - r2} y2={fy} stroke="#ffffff" strokeWidth="1.2" opacity="0.75" />
-                      <line x1={fx + r2} y1={fy} x2={fx + r3 + 5} y2={fy} stroke="#ffffff" strokeWidth="1.2" opacity="0.75" />
+                      <line x1={fx} y1={fy - r3 - 5} x2={fx} y2={fy - r2} stroke={reticleColor} strokeWidth="1.2" opacity="0.75" />
+                      <line x1={fx} y1={fy + r2} x2={fx} y2={fy + r3 + 5} stroke={reticleColor} strokeWidth="1.2" opacity="0.75" />
+                      <line x1={fx - r3 - 5} y1={fy} x2={fx - r2} y2={fy} stroke={reticleColor} strokeWidth="1.2" opacity="0.75" />
+                      <line x1={fx + r2} y1={fy} x2={fx + r3 + 5} y2={fy} stroke={reticleColor} strokeWidth="1.2" opacity="0.75" />
                       {/* Badge text */}
                       <text
                         x={fx}
                         y={fy + r3 + 13}
                         textAnchor="middle"
-                        fill="#ffffff"
+                        fill={reticleColor}
                         fontSize="8.5"
                         fontFamily="monospace"
                         fontWeight="bold"
@@ -1061,8 +1078,8 @@ export function SkyMapPlanisphere2D({
                       cx={fx}
                       cy={fy}
                       r={Math.max(4, rFov)}
-                      fill="rgba(255, 255, 255, 0.03)"
-                      stroke="#ffffff"
+                      fill={reticleFill}
+                      stroke={reticleColor}
                       strokeWidth="1.4"
                       strokeDasharray={activeFovPreset.reticle === "crosshair" ? "none" : "5 3"}
                       opacity="0.85"
@@ -1070,14 +1087,14 @@ export function SkyMapPlanisphere2D({
 
                     {/* Reticle crosshair */}
                     {activeFovPreset.reticle === "crosshair" ? (
-                      <g stroke="#ffffff" strokeWidth="0.9" opacity="0.7" strokeDasharray="2 2">
+                      <g stroke={reticleColor} strokeWidth="0.9" opacity="0.7" strokeDasharray="2 2">
                         <line x1={fx - rFov} y1={fy} x2={fx - 4} y2={fy} />
                         <line x1={fx + 4} y1={fy} x2={fx + rFov} y2={fy} />
                         <line x1={fx} y1={fy - rFov} x2={fx} y2={fy - 4} />
                         <line x1={fx} y1={fy + 4} x2={fx} y2={fy + rFov} />
                       </g>
                     ) : (
-                      <g stroke="#ffffff" strokeWidth="1" opacity="0.6">
+                      <g stroke={reticleColor} strokeWidth="1" opacity="0.6">
                         <line x1={fx - 3} y1={fy} x2={fx + 3} y2={fy} />
                         <line x1={fx} y1={fy - 3} x2={fx} y2={fy + 3} />
                       </g>
@@ -1088,7 +1105,7 @@ export function SkyMapPlanisphere2D({
                       x={fx}
                       y={fy + rFov + 12}
                       textAnchor="middle"
-                      fill="#ffffff"
+                      fill={reticleColor}
                       fontSize="8.5"
                       fontFamily="monospace"
                       fontWeight="bold"
@@ -1135,72 +1152,72 @@ export function SkyMapPlanisphere2D({
             <g className="font-mono select-none pointer-events-none">
               {/* North (0°) */}
               <g transform={`translate(${CX}, ${CY - RADIUS - 14})`}>
-                <circle cx="0" cy="-3" r="10" fill="#09090b" stroke="#ffffff" strokeWidth="1.5" />
-                <text x="0" y="1" textAnchor="middle" fill="#ffffff" fontSize="12" fontWeight="bold">
+                <circle cx="0" cy="-3" r="10" fill="#09090b" stroke={isNightVision ? "#ff3333" : "#ffffff"} strokeWidth="1.5" />
+                <text x="0" y="1" textAnchor="middle" fill={isNightVision ? "#ff3333" : "#ffffff"} fontSize="12" fontWeight="bold">
                   N
                 </text>
-                <text x="0" y="13" textAnchor="middle" fill="#a1a1aa" fontSize="8">
+                <text x="0" y="13" textAnchor="middle" fill={isNightVision ? "#ff6666" : "#a1a1aa"} fontSize="8">
                   PÓŁNOC (0°)
                 </text>
               </g>
 
               {/* North-East (45°) */}
               <g transform={`translate(${CX + RADIUS * 0.707 + 10}, ${CY - RADIUS * 0.707 - 10})`}>
-                <text x="0" y="0" textAnchor="start" fill="#71717a" fontSize="10" fontWeight="bold">
+                <text x="0" y="0" textAnchor="start" fill={isNightVision ? "#cc3333" : "#71717a"} fontSize="10" fontWeight="bold">
                   NE 45°
                 </text>
               </g>
 
               {/* East (90°) */}
               <g transform={`translate(${CX + RADIUS + 18}, ${CY})`}>
-                <circle cx="0" cy="-3" r="10" fill="#09090b" stroke="#71717a" strokeWidth="1.2" />
-                <text x="0" y="1" textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="bold">
+                <circle cx="0" cy="-3" r="10" fill="#09090b" stroke={isNightVision ? "#cc3333" : "#71717a"} strokeWidth="1.2" />
+                <text x="0" y="1" textAnchor="middle" fill={isNightVision ? "#ff4444" : "#ffffff"} fontSize="11" fontWeight="bold">
                   E
                 </text>
-                <text x="0" y="12" textAnchor="middle" fill="#71717a" fontSize="7.5">
+                <text x="0" y="12" textAnchor="middle" fill={isNightVision ? "#cc3333" : "#71717a"} fontSize="7.5">
                   WSCHÓD (90°)
                 </text>
               </g>
 
               {/* South-East (135°) */}
               <g transform={`translate(${CX + RADIUS * 0.707 + 10}, ${CY + RADIUS * 0.707 + 12})`}>
-                <text x="0" y="0" textAnchor="start" fill="#71717a" fontSize="10" fontWeight="bold">
+                <text x="0" y="0" textAnchor="start" fill={isNightVision ? "#cc3333" : "#71717a"} fontSize="10" fontWeight="bold">
                   SE 135°
                 </text>
               </g>
 
               {/* South (180°) */}
               <g transform={`translate(${CX}, ${CY + RADIUS + 20})`}>
-                <circle cx="0" cy="-3" r="10" fill="#09090b" stroke="#71717a" strokeWidth="1.2" />
-                <text x="0" y="1" textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="bold">
+                <circle cx="0" cy="-3" r="10" fill="#09090b" stroke={isNightVision ? "#cc3333" : "#71717a"} strokeWidth="1.2" />
+                <text x="0" y="1" textAnchor="middle" fill={isNightVision ? "#ff4444" : "#ffffff"} fontSize="11" fontWeight="bold">
                   S
                 </text>
-                <text x="0" y="13" textAnchor="middle" fill="#71717a" fontSize="8">
+                <text x="0" y="13" textAnchor="middle" fill={isNightVision ? "#cc3333" : "#71717a"} fontSize="8">
                   POŁUDNIE (180°)
                 </text>
               </g>
 
               {/* South-West (225°) */}
               <g transform={`translate(${CX - RADIUS * 0.707 - 10}, ${CY + RADIUS * 0.707 + 12})`}>
-                <text x="0" y="0" textAnchor="end" fill="#71717a" fontSize="10" fontWeight="bold">
+                <text x="0" y="0" textAnchor="end" fill={isNightVision ? "#cc3333" : "#71717a"} fontSize="10" fontWeight="bold">
                   SW 225°
                 </text>
               </g>
 
               {/* West (270°) */}
               <g transform={`translate(${CX - RADIUS - 18}, ${CY})`}>
-                <circle cx="0" cy="-3" r="10" fill="#09090b" stroke="#71717a" strokeWidth="1.2" />
-                <text x="0" y="1" textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="bold">
+                <circle cx="0" cy="-3" r="10" fill="#09090b" stroke={isNightVision ? "#cc3333" : "#71717a"} strokeWidth="1.2" />
+                <text x="0" y="1" textAnchor="middle" fill={isNightVision ? "#ff4444" : "#ffffff"} fontSize="11" fontWeight="bold">
                   W
                 </text>
-                <text x="0" y="12" textAnchor="middle" fill="#71717a" fontSize="7.5">
+                <text x="0" y="12" textAnchor="middle" fill={isNightVision ? "#cc3333" : "#71717a"} fontSize="7.5">
                   ZACHÓD (270°)
                 </text>
               </g>
 
               {/* North-West (315°) */}
               <g transform={`translate(${CX - RADIUS * 0.707 - 10}, ${CY - RADIUS * 0.707 - 10})`}>
-                <text x="0" y="0" textAnchor="end" fill="#71717a" fontSize="10" fontWeight="bold">
+                <text x="0" y="0" textAnchor="end" fill={isNightVision ? "#cc3333" : "#71717a"} fontSize="10" fontWeight="bold">
                   NW 315°
                 </text>
               </g>

@@ -18,9 +18,12 @@ import {
   Keyboard,
   Crosshair,
   Target,
+  Eye,
 } from "lucide-react";
 import { SkyMapPlanisphere2D } from "@/components/skymap/SkyMapPlanisphere2D";
 import { StarInfoCard } from "@/components/skymap/StarInfoCard";
+import { MobileStarBottomSheet } from "@/components/skymap/MobileStarBottomSheet";
+import { MobileFloatingDock } from "@/components/skymap/MobileFloatingDock";
 import { KeyboardShortcutsModal } from "@/components/skymap/KeyboardShortcutsModal";
 import { StarData, DeepSkyObject, SkyMapCatalog, FOV_PRESETS } from "@/lib/types";
 import rawSkyMap from "@/data/skymap_data.json";
@@ -91,6 +94,16 @@ const CX = 300;
 const CY = 300;
 const RADIUS = 250;
 
+function triggerHaptic(duration = 18) {
+  if (typeof window !== "undefined" && "vibrate" in navigator) {
+    try {
+      navigator.vibrate(duration);
+    } catch {
+      // ignore
+    }
+  }
+}
+
 export default function SkyMapPage() {
   const [selectedCityId, setSelectedCityId] = useState<string>("warszawa");
   const [customLocation, setCustomLocation] = useState<CityConfig | null>(null);
@@ -103,6 +116,7 @@ export default function SkyMapPage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isObservatoryMode, setIsObservatoryMode] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+  const [isNightVision, setIsNightVision] = useState(false);
 
   // FOV Simulator Preset
   const [fovPresetId, setFovPresetId] = useState<string>("none");
@@ -275,6 +289,7 @@ export default function SkyMapPage() {
 
   // Focus on Selected Object
   const handleFocusSelected = useCallback(() => {
+    triggerHaptic(20);
     if (!selectedObject) return;
     if (selectedObject.type === "star") {
       const s = selectedObject.data as StarData;
@@ -345,6 +360,10 @@ export default function SkyMapPage() {
       } else if (e.key === "p" || e.key === "P") {
         e.preventDefault();
         setIsObservatoryMode((prev) => !prev);
+      } else if (e.key === "n" || e.key === "N") {
+        e.preventDefault();
+        triggerHaptic(20);
+        setIsNightVision((prev) => !prev);
       }
     };
 
@@ -573,6 +592,32 @@ export default function SkyMapPage() {
                   </div>
                 )}
               </div>
+
+              {/* Red Night Vision Mode Toggle */}
+              <button
+                onClick={() => {
+                  triggerHaptic(20);
+                  setIsNightVision((prev) => !prev);
+                }}
+                title={
+                  isNightVision
+                    ? "Wyłącz czerwony tryb nocny (klawisz N)"
+                    : "Włącz czerwony tryb nocny do obserwacji (klawisz N)"
+                }
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer shrink-0 text-xs ${
+                  isNightVision
+                    ? "border-red-600/60 bg-red-950/70 text-red-200 shadow-[0_0_12px_rgba(239,68,68,0.35)]"
+                    : "border-white/10 bg-zinc-900/80 text-zinc-300 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                <Eye className={`h-3.5 w-3.5 ${isNightVision ? "text-red-400" : "text-zinc-400"}`} />
+                <span className="hidden sm:inline font-medium">
+                  {isNightVision ? "Nocny aktywny" : "Tryb nocny"}
+                </span>
+                {isNightVision && (
+                  <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                )}
+              </button>
 
               {/* Shortcuts button */}
               <button
@@ -901,15 +946,69 @@ export default function SkyMapPage() {
           }
           targetFocus={targetFocus}
           fovPresetId={fovPresetId}
+          isNightVision={isNightVision}
         />
 
-        {/* Selected Object Detail Card HUD (With 24h Altitude vs Time Chart) */}
+        {/* Selected Object Detail Card HUD - Desktop (With 24h Altitude vs Time Chart) */}
         <StarInfoCard
           selectedObject={selectedObject}
           onClose={() => setSelectedObject(null)}
           lat={activeCity.lat}
           lon={activeCity.lon}
           simulatedTime={simulatedTime}
+          isNightVision={isNightVision}
+        />
+
+        {/* Mobile Bottom Sheet for Selected Object (3 Snap States: Peek, Half, Full) */}
+        <MobileStarBottomSheet
+          selectedObject={selectedObject}
+          onClose={() => setSelectedObject(null)}
+          lat={activeCity.lat}
+          lon={activeCity.lon}
+          simulatedTime={simulatedTime}
+          isNightVision={isNightVision}
+        />
+
+        {/* Mobile Floating Action Dock (Search, Time, Layers, GPS/Location, Red Night Vision) */}
+        <MobileFloatingDock
+          isNightVision={isNightVision}
+          onToggleNightVision={() => {
+            triggerHaptic(20);
+            setIsNightVision((prev) => !prev);
+          }}
+          onOpenSearch={() => {
+            setIsSearchOpen(true);
+            setTimeout(() => searchInputRef.current?.focus(), 50);
+          }}
+          simulatedTime={simulatedTime}
+          isPlaying={isPlaying}
+          onTogglePlay={() => {
+            setIsLive(false);
+            setIsPlaying((p) => !p);
+          }}
+          onShiftTime={handleShiftTime}
+          onLiveNow={handleLiveNow}
+          cities={CITIES}
+          selectedCityId={selectedCityId}
+          activeCityName={activeCity.name}
+          onSelectCity={(cityId) => {
+            setCustomLocation(null);
+            setSelectedCityId(cityId);
+          }}
+          onRequestGPS={handleRequestGPS}
+          showConstellations={showConstellations}
+          setShowConstellations={setShowConstellations}
+          showLabels={showLabels}
+          setShowLabels={setShowLabels}
+          showDso={showDso}
+          setShowDso={setShowDso}
+          showGrid={showGrid}
+          setShowGrid={setShowGrid}
+          showMilkyWay={showMilkyWay}
+          setShowMilkyWay={setShowMilkyWay}
+          fovPresetId={fovPresetId}
+          setFovPresetId={setFovPresetId}
+          hasSelectedObject={Boolean(selectedObject)}
         />
 
         {/* ======================================================== */}
@@ -989,6 +1088,22 @@ export default function SkyMapPage() {
                   <Target className="h-4 w-4" />
                 </button>
               )}
+
+              {/* Night Vision toggle in Observatory */}
+              <button
+                onClick={() => {
+                  triggerHaptic(20);
+                  setIsNightVision((prev) => !prev);
+                }}
+                title={isNightVision ? "Wyłącz czerwony tryb nocny (N)" : "Włącz czerwony tryb nocny (N)"}
+                className={`flex h-8 w-8 items-center justify-center rounded-xl border transition-all cursor-pointer backdrop-blur-xl ${
+                  isNightVision
+                    ? "border-red-600/70 bg-red-950/70 text-red-200 shadow-[0_0_12px_rgba(239,68,68,0.4)]"
+                    : "border-white/15 bg-zinc-950/85 text-zinc-200 hover:bg-white/15 hover:text-white"
+                }`}
+              >
+                <Eye className={`h-4 w-4 ${isNightVision ? "text-red-400" : "text-zinc-300"}`} />
+              </button>
 
               {/* Shortcuts modal button */}
               <button

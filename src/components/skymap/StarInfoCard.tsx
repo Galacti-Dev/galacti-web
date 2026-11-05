@@ -30,6 +30,7 @@ interface SelectedObjectInfoProps {
   lat?: number;
   lon?: number;
   simulatedTime?: Date;
+  isNightVision?: boolean;
 }
 
 export function StarInfoCard({
@@ -38,6 +39,7 @@ export function StarInfoCard({
   lat = 52.23,
   lon = 21.01,
   simulatedTime = new Date(),
+  isNightVision = false,
 }: SelectedObjectInfoProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"info" | "altitude">("info");
@@ -46,12 +48,18 @@ export function StarInfoCard({
 
   const { type, data } = selectedObject;
 
+  const containerClasses = `hidden sm:block absolute sm:right-4 sm:top-20 sm:w-96 lg:w-[420px] max-w-[calc(100vw-1rem)] rounded-2xl border p-3.5 sm:p-4.5 shadow-2xl backdrop-blur-2xl z-30 transition-all animate-in fade-in slide-in-from-right-3 max-h-[85vh] overflow-y-auto ${
+    isNightVision
+      ? "bg-[#0d0000]/98 border-red-900/60 text-red-100 shadow-red-950/50"
+      : "bg-zinc-950/95 border-white/20 text-zinc-100"
+  }`;
+
   if (type === "star") {
     const star = data as StarData;
     const conPl = CONSTELLATION_NAMES_PL[star.con] || star.con;
 
     return (
-      <div className="absolute inset-x-2 bottom-2 sm:inset-x-auto sm:right-4 sm:top-20 sm:bottom-auto sm:w-96 lg:w-[420px] max-w-[calc(100vw-1rem)] rounded-2xl border border-white/20 bg-zinc-950/95 p-3.5 sm:p-4.5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-3 max-h-[85vh] overflow-y-auto">
+      <div className={containerClasses}>
         {/* Header */}
         <div className="flex items-start justify-between border-b border-white/10 pb-2.5">
           <div className="flex-1 pr-2">
@@ -180,7 +188,7 @@ export function StarInfoCard({
     const conPl = CONSTELLATION_NAMES_PL[dso.con] || dso.con;
 
     return (
-      <div className="absolute inset-x-2 bottom-2 sm:inset-x-auto sm:right-4 sm:top-20 sm:bottom-auto sm:w-96 lg:w-[420px] max-w-[calc(100vw-1rem)] rounded-2xl border border-white/20 bg-zinc-950/95 p-3.5 sm:p-4.5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-3 max-h-[85vh] overflow-y-auto">
+      <div className={containerClasses}>
         {/* Header */}
         <div className="flex items-start justify-between border-b border-white/10 pb-2.5">
           <div className="flex-1 pr-2">
@@ -307,7 +315,7 @@ export function StarInfoCard({
     const avgDec = stars.reduce((sum, s) => sum + s.dec, 0) / (stars.length || 1);
 
     return (
-      <div className="absolute inset-x-2 bottom-2 sm:inset-x-auto sm:right-4 sm:top-20 sm:bottom-auto sm:w-96 lg:w-[420px] max-w-[calc(100vw-1rem)] rounded-2xl border border-white/20 bg-zinc-950/95 p-3.5 sm:p-4.5 shadow-2xl backdrop-blur-2xl text-zinc-100 z-30 transition-all animate-in fade-in slide-in-from-bottom-3 max-h-[85vh] overflow-y-auto">
+      <div className={containerClasses}>
         {/* Header */}
         <div className="flex items-start justify-between border-b border-white/10 pb-2.5">
           <div className="flex-1 pr-2">

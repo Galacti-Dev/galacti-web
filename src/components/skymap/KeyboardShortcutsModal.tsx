@@ -50,6 +50,11 @@ const SHORTCUTS: ShortcutItem[] = [
     category: "Nawigacja",
   },
   {
+    keys: ["N"],
+    description: "Przełącz czerwony tryb nocny (ochrona adaptacji wzroku)",
+    category: "Nawigacja",
+  },
+  {
     keys: ["?"],
     description: "Otwórz / zamknij tę ściągę skrótów klawiszowych",
     category: "Nawigacja",
